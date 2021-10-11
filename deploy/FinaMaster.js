@@ -5,7 +5,7 @@ module.exports = async function ({ ethers, deployments, getNamedAccounts }) {
 
   const sushi = await ethers.getContract("FinaToken")
   
-  const { address } = await deploy("MasterChef", {
+  const { address } = await deploy("FinaMaster", {
     from: deployer,
     args: [sushi.address, dev, "1000000000000000000000", "0", "1000000000000000000000"],
     log: true,
@@ -18,13 +18,13 @@ module.exports = async function ({ ethers, deployments, getNamedAccounts }) {
     await (await sushi.transferOwnership(address)).wait()
   }
 
-  const masterChef = await ethers.getContract("MasterChef")
+  const masterChef = await ethers.getContract("FinaMaster")
   if (await masterChef.owner() !== dev) {
-    // Transfer ownership of MasterChef to dev
-    console.log("Transfer ownership of MasterChef to dev")
+    // Transfer ownership of FinaMaster to dev
+    console.log("Transfer ownership of FinaMaster to dev")
     await (await masterChef.transferOwnership(dev)).wait()
   }
 }
 
-module.exports.tags = ["MasterChef"]
+module.exports.tags = ["FinaMaster"]
 module.exports.dependencies = ["UniswapV2Factory", "UniswapV2Router02", "FinaToken"]

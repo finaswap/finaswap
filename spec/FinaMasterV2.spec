@@ -1,8 +1,8 @@
 /*
- * This is a specification file for MasterChefV2's formal verification
+ * This is a specification file for FinaMasterV2's formal verification
  * using the Certora prover.
  *
- * Run this file with scripts/_runMasterChefV2.sh
+ * Run this file with scripts/_runFinaMasterV2.sh
  */
 
  // All Passing!
@@ -55,7 +55,7 @@ methods {
 	// Rewarder
 	onSushiReward(uint256, address, address, uint256, uint256) => NONDET
 
-	// MasterChefV1
+	// FinaMasterV1
 	deposit(uint256 pid, uint256 amount) => NONDET
 
 	migrate(address _lpToken) => NONDET

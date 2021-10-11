@@ -3,7 +3,7 @@ import { ethers } from "hardhat";
 import { expect } from "chai";
 import { advanceBlockTo } from "./utilities"
 
-describe("MasterChef", function () {
+describe("FinaMaster", function () {
   before(async function () {
     this.signers = await ethers.getSigners()
     this.alice = this.signers[0]
@@ -12,7 +12,7 @@ describe("MasterChef", function () {
     this.dev = this.signers[3]
     this.minter = this.signers[4]
 
-    this.MasterChef = await ethers.getContractFactory("MasterChef")
+    this.FinaMaster = await ethers.getContractFactory("FinaMaster")
     this.FinaToken = await ethers.getContractFactory("FinaToken")
     this.ERC20Mock = await ethers.getContractFactory("ERC20Mock", this.minter)
   })
@@ -23,7 +23,7 @@ describe("MasterChef", function () {
   })
 
   it("should set correct state variables", async function () {
-    this.chef = await this.MasterChef.deploy(this.sushi.address, this.dev.address, "1000", "0", "1000")
+    this.chef = await this.FinaMaster.deploy(this.sushi.address, this.dev.address, "1000", "0", "1000")
     await this.chef.deployed()
 
     await this.sushi.transferOwnership(this.chef.address)
@@ -38,7 +38,7 @@ describe("MasterChef", function () {
   })
 
   it("should allow dev and only dev to update dev", async function () {
-    this.chef = await this.MasterChef.deploy(this.sushi.address, this.dev.address, "1000", "0", "1000")
+    this.chef = await this.FinaMaster.deploy(this.sushi.address, this.dev.address, "1000", "0", "1000")
     await this.chef.deployed()
 
     expect(await this.chef.devaddr()).to.equal(this.dev.address)
@@ -75,7 +75,7 @@ describe("MasterChef", function () {
 
     it("should allow emergency withdraw", async function () {
       // 100 per block farming rate starting at block 100 with bonus until block 1000
-      this.chef = await this.MasterChef.deploy(this.sushi.address, this.dev.address, "100", "100", "1000")
+      this.chef = await this.FinaMaster.deploy(this.sushi.address, this.dev.address, "100", "100", "1000")
       await this.chef.deployed()
 
       await this.chef.add("100", this.lp.address, true)
@@ -93,7 +93,7 @@ describe("MasterChef", function () {
 
     it("should give out FINAs only after farming time", async function () {
       // 100 per block farming rate starting at block 100 with bonus until block 1000
-      this.chef = await this.MasterChef.deploy(this.sushi.address, this.dev.address, "100", "100", "1000")
+      this.chef = await this.FinaMaster.deploy(this.sushi.address, this.dev.address, "100", "100", "1000")
       await this.chef.deployed()
 
       await this.sushi.transferOwnership(this.chef.address)
@@ -129,7 +129,7 @@ describe("MasterChef", function () {
 
     it("should not distribute FINAs if no one deposit", async function () {
       // 100 per block farming rate starting at block 200 with bonus until block 1000
-      this.chef = await this.MasterChef.deploy(this.sushi.address, this.dev.address, "100", "200", "1000")
+      this.chef = await this.FinaMaster.deploy(this.sushi.address, this.dev.address, "100", "200", "1000")
       await this.chef.deployed()
       await this.sushi.transferOwnership(this.chef.address)
       await this.chef.add("100", this.lp.address, true)
@@ -154,7 +154,7 @@ describe("MasterChef", function () {
 
     it("should distribute FINAs properly for each staker", async function () {
       // 100 per block farming rate starting at block 300 with bonus until block 1000
-      this.chef = await this.MasterChef.deploy(this.sushi.address, this.dev.address, "100", "300", "1000")
+      this.chef = await this.FinaMaster.deploy(this.sushi.address, this.dev.address, "100", "300", "1000")
       await this.chef.deployed()
       await this.sushi.transferOwnership(this.chef.address)
       await this.chef.add("100", this.lp.address, true)
@@ -178,7 +178,7 @@ describe("MasterChef", function () {
       await this.chef.connect(this.carol).deposit(0, "30", { from: this.carol.address })
       // Alice deposits 10 more LPs at block 320. At this point:
       //   Alice should have: 4*1000 + 4*1/3*1000 + 2*1/6*1000 = 5666
-      //   MasterChef should have the remaining: 10000 - 5666 = 4334
+      //   FinaMaster should have the remaining: 10000 - 5666 = 4334
       await advanceBlockTo("319")
       await this.chef.connect(this.alice).deposit(0, "10", { from: this.alice.address })
       expect(await this.sushi.totalSupply()).to.equal("11000")
@@ -222,7 +222,7 @@ describe("MasterChef", function () {
 
     it("should give proper FINAs allocation to each pool", async function () {
       // 100 per block farming rate starting at block 400 with bonus until block 1000
-      this.chef = await this.MasterChef.deploy(this.sushi.address, this.dev.address, "100", "400", "1000")
+      this.chef = await this.FinaMaster.deploy(this.sushi.address, this.dev.address, "100", "400", "1000")
       await this.sushi.transferOwnership(this.chef.address)
       await this.lp.connect(this.alice).approve(this.chef.address, "1000", { from: this.alice.address })
       await this.lp2.connect(this.bob).approve(this.chef.address, "1000", { from: this.bob.address })
@@ -249,7 +249,7 @@ describe("MasterChef", function () {
 
     it("should stop giving bonus FINAs after the bonus period ends", async function () {
       // 100 per block farming rate starting at block 500 with bonus until block 600
-      this.chef = await this.MasterChef.deploy(this.sushi.address, this.dev.address, "100", "500", "600")
+      this.chef = await this.FinaMaster.deploy(this.sushi.address, this.dev.address, "100", "500", "600")
       await this.sushi.transferOwnership(this.chef.address)
       await this.lp.connect(this.alice).approve(this.chef.address, "1000", { from: this.alice.address })
       await this.chef.add("1", this.lp.address, true)

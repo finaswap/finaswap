@@ -11,7 +11,7 @@ import "./uniswapv2/interfaces/IUniswapV2Factory.sol";
 
 import "./Ownable.sol";
 
-// SushiMaker is MasterChef's left hand and kinda a wizard. He can cook up Sushi from pretty much anything!
+// SushiMaker is FinaMaster's left hand and kinda a wizard. He can cook up Sushi from pretty much anything!
 // This contract handles "serving up" rewards for xSushi holders by trading tokens collected from fees for Sushi.
 
 // T1 - T4: OK

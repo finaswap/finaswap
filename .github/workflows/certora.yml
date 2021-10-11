@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  verify_MasterChefV2:
+  verify_FinaMasterV2:
     runs-on: ubuntu-latest
 
     steps:
@@ -56,8 +56,8 @@ jobs:
           chmod +x spec/scripts/*.sh
           ./spec/scripts/applyHarnesses.sh
 
-      - name: Verify with Certora - MasterChefV2
+      - name: Verify with Certora - FinaMasterV2
         run: |
-          spec/scripts/runMasterChefV2.sh
+          spec/scripts/runFinaMasterV2.sh
         env:
           CERTORAKEY: ${{ secrets.CERTORAKEY }}

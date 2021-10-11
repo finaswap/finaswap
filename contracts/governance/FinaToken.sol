@@ -166,7 +166,7 @@ contract FinaToken is Ownable {
         return true;
     }
 	
-    /// @notice Creates `_amount` token to `_to`. Must only be called by the owner (MasterChef).
+    /// @notice Creates `_amount` token to `_to`. Must only be called by the owner (FinaMaster).
     function mint(address to, uint rawAmount) public onlyOwner {
 	    uint96 amount = safe96(rawAmount, "FinaToken::mint: amount exceeds 96 bits");
         _mint(to, amount);

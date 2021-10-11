@@ -198,16 +198,16 @@ task("migrate", "Migrates liquidity from Uniswap to SushiSwap")
 
 task("masterchef:add", "Add pool to masterchef")
 .setAction(async function (taskArguments, { ethers: { getNamedSigner } }, runSuper) {
-  const masterChef = await ethers.getContract("MasterChef")
+  const masterChef = await ethers.getContract("FinaMaster")
 
   await (await masterChef.connect(await getNamedSigner("dev")).add(1000, '0x3e78a806b127c02b54419191571d9379819e989c', true)).wait()
 });
 
-task("masterchef:deposit", "MasterChef deposit")
+task("masterchef:deposit", "FinaMaster deposit")
 .addParam("pid", "Pool ID")
 .addParam("amount", "Amount")
 .setAction(async function ({ pid, amount }, { ethers: { getNamedSigner } }, runSuper) {
-  const masterChef = await ethers.getContract("MasterChef")
+  const masterChef = await ethers.getContract("FinaMaster")
 
   const { lpToken } = await masterChef.poolInfo(pid)
 
@@ -216,11 +216,11 @@ task("masterchef:deposit", "MasterChef deposit")
   await (await masterChef.connect(await getNamedSigner("dev")).deposit(pid, amount)).wait()
 });
 
-task("masterchef:withdraw", "MasterChef withdraw")
+task("masterchef:withdraw", "FinaMaster withdraw")
 .addParam("pid", "Pool ID")
 .addParam("amount", "Amount")
 .setAction(async function ({ pid, amount }, { ethers: { getNamedSigner } }, runSuper) {
-  const masterChef = await ethers.getContract("MasterChef")
+  const masterChef = await ethers.getContract("FinaMaster")
 
   const { lpToken } = await masterChef.poolInfo(pid)
 

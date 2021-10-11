@@ -7,7 +7,7 @@ import "@boringcrypto/boring-solidity/contracts/libraries/BoringERC20.sol";
 import "@boringcrypto/boring-solidity/contracts/libraries/BoringMath.sol";
 import "@boringcrypto/boring-solidity/contracts/BoringOwnable.sol";
 
-interface IMasterChefV2 {
+interface IFinaMasterV2 {
     function lpToken(uint256 pid) external view returns (IERC20 _lpToken); 
 }
 
@@ -65,7 +65,7 @@ contract CloneRewarderTime is IRewarder,  BoringOwnable{
     }
 
     function onSushiReward (uint256 pid, address _user, address to, uint256, uint256 lpTokenAmount) onlyMCV2 override external {
-        require(IMasterChefV2(MASTERCHEF_V2).lpToken(pid) == masterLpToken);
+        require(IFinaMasterV2(MASTERCHEF_V2).lpToken(pid) == masterLpToken);
 
         PoolInfo memory pool = updatePool(pid);
         UserInfo storage user = userInfo[pid][_user];
@@ -119,7 +119,7 @@ contract CloneRewarderTime is IRewarder,  BoringOwnable{
         PoolInfo memory pool = poolInfo[_pid];
         UserInfo storage user = userInfo[_pid][_user];
         uint256 accToken1PerShare = pool.accToken1PerShare;
-        uint256 lpSupply = IMasterChefV2(MASTERCHEF_V2).lpToken(_pid).balanceOf(MASTERCHEF_V2);
+        uint256 lpSupply = IFinaMasterV2(MASTERCHEF_V2).lpToken(_pid).balanceOf(MASTERCHEF_V2);
         if (block.timestamp > pool.lastRewardTime && lpSupply != 0) {
             uint256 time = block.timestamp.sub(pool.lastRewardTime);
             uint256 sushiReward = time.mul(rewardPerSecond);
@@ -134,7 +134,7 @@ contract CloneRewarderTime is IRewarder,  BoringOwnable{
     function updatePool(uint256 pid) public returns (PoolInfo memory pool) {
         pool = poolInfo[pid];
         if (block.timestamp > pool.lastRewardTime) {
-            uint256 lpSupply = IMasterChefV2(MASTERCHEF_V2).lpToken(pid).balanceOf(MASTERCHEF_V2);
+            uint256 lpSupply = IFinaMasterV2(MASTERCHEF_V2).lpToken(pid).balanceOf(MASTERCHEF_V2);
 
             if (lpSupply > 0) {
                 uint256 time = block.timestamp.sub(pool.lastRewardTime);

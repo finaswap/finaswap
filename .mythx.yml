@@ -19,5 +19,5 @@ analyze:
         - contracts/governance/GovernorAlpha.sol:GovernorAlpha
         - contracts/SushiRoll.sol:SushiRoll
         - contracts/SushiBar.sol:SushiBar
-        - contracts/MasterChef.sol:MasterChef
+        - contracts/FinaMaster.sol:FinaMaster
         - contracts/Migrator.sol:Migrator

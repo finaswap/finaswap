@@ -3,7 +3,7 @@ pragma solidity 0.6.12;
 pragma experimental ABIEncoderV2;
 import "@boringcrypto/boring-solidity/contracts/libraries/BoringERC20.sol";
 
-interface IMasterChef {
+interface IFinaMaster {
     using BoringERC20 for IERC20;
     struct UserInfo {
         uint256 amount;     // How many LP tokens the user has provided.
@@ -17,7 +17,7 @@ interface IMasterChef {
         uint256 accSushiPerShare; // Accumulated FINA per share, times 1e12. See below.
     }
 
-    function poolInfo(uint256 pid) external view returns (IMasterChef.PoolInfo memory);
+    function poolInfo(uint256 pid) external view returns (IFinaMaster.PoolInfo memory);
     function totalAllocPoint() external view returns (uint256);
     function deposit(uint256 _pid, uint256 _amount) external;
 }

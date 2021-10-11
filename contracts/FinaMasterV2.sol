@@ -8,7 +8,7 @@ import "@boringcrypto/boring-solidity/contracts/BoringBatchable.sol";
 import "@boringcrypto/boring-solidity/contracts/BoringOwnable.sol";
 import "./libraries/SignedSafeMath.sol";
 import "./interfaces/IRewarder.sol";
-import "./interfaces/IMasterChef.sol";
+import "./interfaces/IFinaMaster.sol";
 
 interface IMigratorChef {
     // Take the current LP token address and return the new LP token address.
@@ -16,12 +16,12 @@ interface IMigratorChef {
     function migrate(IERC20 token) external returns (IERC20);
 }
 
-/// @notice The (older) MasterChef contract gives out a constant number of FINA tokens per block.
+/// @notice The (older) FinaMaster contract gives out a constant number of FINA tokens per block.
 /// It is the only address with minting rights for FINA.
-/// The idea for this MasterChef V2 (MCV2) contract is therefore to be the owner of a dummy token
-/// that is deposited into the MasterChef V1 (MCV1) contract.
+/// The idea for this FinaMaster V2 (MCV2) contract is therefore to be the owner of a dummy token
+/// that is deposited into the FinaMaster V1 (MCV1) contract.
 /// The allocation point for this pool on MCV1 is the total allocation point for all pools that receive double incentives.
-contract MasterChefV2 is BoringOwnable, BoringBatchable {
+contract FinaMasterV2 is BoringOwnable, BoringBatchable {
     using BoringMath for uint256;
     using BoringMath128 for uint128;
     using BoringERC20 for IERC20;
@@ -45,7 +45,7 @@ contract MasterChefV2 is BoringOwnable, BoringBatchable {
     }
 
     /// @notice Address of MCV1 contract.
-    IMasterChef public immutable MASTER_CHEF;
+    IFinaMaster public immutable MASTER_CHEF;
     /// @notice Address of FINA contract.
     IERC20 public immutable FINA;
     /// @notice The index of MCV2 master pool in MCV1.
@@ -80,7 +80,7 @@ contract MasterChefV2 is BoringOwnable, BoringBatchable {
     /// @param _MASTER_CHEF The SushiSwap MCV1 contract address.
     /// @param _sushi The FINA token contract address.
     /// @param _MASTER_PID The pool ID of the dummy token on the base MCV1 contract.
-    constructor(IMasterChef _MASTER_CHEF, IERC20 _sushi, uint256 _MASTER_PID) public {
+    constructor(IFinaMaster _MASTER_CHEF, IERC20 _sushi, uint256 _MASTER_PID) public {
         MASTER_CHEF = _MASTER_CHEF;
         FINA = _sushi;
         MASTER_PID = _MASTER_PID;
@@ -92,7 +92,7 @@ contract MasterChefV2 is BoringOwnable, BoringBatchable {
     /// @param dummyToken The address of the ERC-20 token to deposit into MCV1.
     function init(IERC20 dummyToken) external {
         uint256 balance = dummyToken.balanceOf(msg.sender);
-        require(balance != 0, "MasterChefV2: Balance must exceed 0");
+        require(balance != 0, "FinaMasterV2: Balance must exceed 0");
         dummyToken.safeTransferFrom(msg.sender, address(this), balance);
         dummyToken.approve(address(MASTER_CHEF), balance);
         MASTER_CHEF.deposit(MASTER_PID, balance);
@@ -144,12 +144,12 @@ contract MasterChefV2 is BoringOwnable, BoringBatchable {
     /// @notice Migrate LP token to another LP contract through the `migrator` contract.
     /// @param _pid The index of the pool. See `poolInfo`.
     function migrate(uint256 _pid) public {
-        require(address(migrator) != address(0), "MasterChefV2: no migrator set");
+        require(address(migrator) != address(0), "FinaMasterV2: no migrator set");
         IERC20 _lpToken = lpToken[_pid];
         uint256 bal = _lpToken.balanceOf(address(this));
         _lpToken.approve(address(migrator), bal);
         IERC20 newLpToken = migrator.migrate(_lpToken);
-        require(bal == newLpToken.balanceOf(address(this)), "MasterChefV2: migrated balance must match");
+        require(bal == newLpToken.balanceOf(address(this)), "FinaMasterV2: migrated balance must match");
         lpToken[_pid] = newLpToken;
     }
 
@@ -303,7 +303,7 @@ contract MasterChefV2 is BoringOwnable, BoringBatchable {
     }
 
     /// @notice Harvests FINA from `MASTER_CHEF` MCV1 and pool `MASTER_PID` to this MCV2 contract.
-    function harvestFromMasterChef() public {
+    function harvestFromFinaMaster() public {
         MASTER_CHEF.deposit(MASTER_PID, 0);
     }
 
