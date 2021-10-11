@@ -2,9 +2,9 @@
 
 ## Early
 
-1. SushiToken Deployed
+1. FinaToken Deployed
 2. MasterChef Deployed
-3. SushiToken Ownership Transfered to MasterChef
+3. FinaToken Ownership Transfered to MasterChef
 4. TimeLock Deployed
 5. SushiFactory Deployed
 6. SushiRouter Deployed

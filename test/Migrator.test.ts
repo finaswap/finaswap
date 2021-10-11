@@ -12,7 +12,7 @@ describe("Migrator", function () {
     this.UniswapV2Factory = await ethers.getContractFactory("UniswapV2Factory")
     this.UniswapV2Pair = await ethers.getContractFactory("UniswapV2Pair")
     this.ERC20Mock = await ethers.getContractFactory("ERC20Mock", this.minter)
-    this.SushiToken = await ethers.getContractFactory("SushiToken")
+    this.FinaToken = await ethers.getContractFactory("FinaToken")
     this.MasterChef = await ethers.getContractFactory("MasterChef")
     this.Migrator = await ethers.getContractFactory("Migrator")
   })
@@ -24,7 +24,7 @@ describe("Migrator", function () {
     this.factory2 = await this.UniswapV2Factory.deploy(this.alice.address)
     await this.factory2.deployed()
 
-    this.sushi = await this.SushiToken.deploy()
+    this.sushi = await this.FinaToken.deploy()
     await this.sushi.deployed()
 
     this.weth = await this.ERC20Mock.deploy("WETH", "WETH", "100000000")

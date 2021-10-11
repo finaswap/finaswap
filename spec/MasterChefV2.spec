@@ -11,7 +11,7 @@
 // Declaration of contracts used in the sepc 
 using DummyERC20A as tokenA
 using DummyERC20B as tokenB
-using DummySUSHI as sushiToken
+using DummyFINA as finaToken
 
 /*
  * Declaration of methods that are used in the rules.
@@ -49,8 +49,8 @@ methods {
 	lpTokenLength() returns (uint256) envfree
 	rewarderLength() returns (uint256) envfree
 
-	// SUSHI token
-	SUSHI() returns (address) envfree
+	// FINA token
+	FINA() returns (address) envfree
 
 	// Rewarder
 	onSushiReward(uint256, address, address, uint256, uint256) => NONDET
@@ -233,7 +233,7 @@ rule preserveTotalAssetOfUser(method f, uint256 pid, address user,
 	require lpToken(pid) == tokenA;
 
 	require user == e.msg.sender && user == to && user != currentContract;
-	require SUSHI() != lpToken(pid); // <-- check this again (Nurit)
+	require FINA() != lpToken(pid); // <-- check this again (Nurit)
 
 	uint256 _totalUserAssets = tokenA.balanceOf(e, user) + userInfoAmount(pid, user);
 
@@ -276,7 +276,7 @@ rule changeToAtmostOneUserAmount(uint256 pid, address u, address v, method f) {
 
 rule solvency(uint256 pid, address u, address lptoken, method f) {
 	require lptoken == lpToken(pid);
-	require lptoken != SUSHI();
+	require lptoken != FINA();
 
 	uint256 _balance = userLpTokenBalanceOf(pid, currentContract); // TODO - maybe rename this to LpTokenBalanceOf
 	uint256 _userAmount = userInfoAmount(pid, u); 
@@ -299,15 +299,15 @@ rule sushiGivenInHarvestEqualsPendingSushi(uint256 pid, address user, address to
 	env e;
 
 	require to == user && user != currentContract && e.msg.sender == user;
-	require sushiToken == SUSHI();
+	require finaToken == FINA();
 
-	uint256 userSushiBalance = sushiToken.balanceOf(e, user);
+	uint256 userSushiBalance = finaToken.balanceOf(e, user);
 	uint256 userPendingSushi = pendingSushi(e, pid, user);
 
 	// Does success return value matters? Check with Nurit
 	harvest(e, pid, to);
 
-	uint256 userSushiBalance_ = sushiToken.balanceOf(e, user);
+	uint256 userSushiBalance_ = finaToken.balanceOf(e, user);
 
 	assert(userSushiBalance_ == (userSushiBalance + userPendingSushi),
 		   "pending sushi not equal to the sushi given in harvest");

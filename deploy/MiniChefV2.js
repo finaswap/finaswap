@@ -1,7 +1,7 @@
 const { ChainId } = require("@sushiswap/sdk")
 
 
-const SUSHI = {
+const FINA = {
   [ChainId.MATIC]: '0x0b3F868E0BE5597D5DB7fEB59E1CADBb0fdDa50a'
 }
 
@@ -15,11 +15,11 @@ module.exports = async function ({ ethers, deployments, getNamedAccounts }) {
   let sushiAddress;
 
   if (chainId === '31337') {
-    sushiAddress = (await deployments.get("SushiToken")).address
-  } else if (chainId in SUSHI) {
-    sushiAddress = SUSHI[chainId]
+    sushiAddress = (await deployments.get("FinaToken")).address
+  } else if (chainId in FINA) {
+    sushiAddress = FINA[chainId]
   } else {
-    throw Error("No SUSHI!")
+    throw Error("No FINA!")
   }
 
   await deploy("MiniChefV2", {

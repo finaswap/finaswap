@@ -232,7 +232,7 @@ task("masterchef:withdraw", "MasterChef withdraw")
 task("bar:enter", "SushiBar enter")
 .addParam("amount", "Amount")
 .setAction(async function ({ amount }, { ethers: { getNamedSigner } }, runSuper) {
-  const sushi = await ethers.getContract("SushiToken")
+  const sushi = await ethers.getContract("FinaToken")
 
   const bar = await ethers.getContract("SushiBar")
 
@@ -244,7 +244,7 @@ task("bar:enter", "SushiBar enter")
 task("bar:leave", "SushiBar leave")
 .addParam("amount", "Amount")
 .setAction(async function ({ amount }, { ethers: { getNamedSigner } }, runSuper) {
-  const sushi = await ethers.getContract("SushiToken")
+  const sushi = await ethers.getContract("FinaToken")
 
   const bar = await ethers.getContract("SushiBar")
 

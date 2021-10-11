@@ -44,7 +44,7 @@ contract SushiMaker is Ownable {
         address indexed token1,
         uint256 amount0,
         uint256 amount1,
-        uint256 amountSUSHI
+        uint256 amountFINA
     );
 
     constructor(
@@ -93,7 +93,7 @@ contract SushiMaker is Ownable {
 
     // F1 - F10: OK
     // F3: _convert is separate to save gas by only checking the 'onlyEOA' modifier once in case of convertMultiple
-    // F6: There is an exploit to add lots of SUSHI to the bar, run convert, then remove the SUSHI again.
+    // F6: There is an exploit to add lots of FINA to the bar, run convert, then remove the FINA again.
     //     As the size of the SushiBar has grown, this requires large amounts of funds and isn't super profitable anymore
     //     The onlyEOA modifier prevents this being done with a flash loan.
     // C1 - C24: OK
@@ -145,7 +145,7 @@ contract SushiMaker is Ownable {
 
     // F1 - F10: OK
     // C1 - C24: OK
-    // All safeTransfer, _swap, _toSUSHI, _convertStep: X1 - X5: OK
+    // All safeTransfer, _swap, _toFINA, _convertStep: X1 - X5: OK
     function _convertStep(
         address token0,
         address token1,
@@ -159,29 +159,29 @@ contract SushiMaker is Ownable {
                 IERC20(sushi).safeTransfer(bar, amount);
                 sushiOut = amount;
             } else if (token0 == weth) {
-                sushiOut = _toSUSHI(weth, amount);
+                sushiOut = _toFINA(weth, amount);
             } else {
                 address bridge = bridgeFor(token0);
                 amount = _swap(token0, bridge, amount, address(this));
                 sushiOut = _convertStep(bridge, bridge, amount, 0);
             }
         } else if (token0 == sushi) {
-            // eg. SUSHI - ETH
+            // eg. FINA - ETH
             IERC20(sushi).safeTransfer(bar, amount0);
-            sushiOut = _toSUSHI(token1, amount1).add(amount0);
+            sushiOut = _toFINA(token1, amount1).add(amount0);
         } else if (token1 == sushi) {
-            // eg. USDT - SUSHI
+            // eg. USDT - FINA
             IERC20(sushi).safeTransfer(bar, amount1);
-            sushiOut = _toSUSHI(token0, amount0).add(amount1);
+            sushiOut = _toFINA(token0, amount0).add(amount1);
         } else if (token0 == weth) {
             // eg. ETH - USDC
-            sushiOut = _toSUSHI(
+            sushiOut = _toFINA(
                 weth,
                 _swap(token1, weth, amount1, address(this)).add(amount0)
             );
         } else if (token1 == weth) {
             // eg. USDT - ETH
-            sushiOut = _toSUSHI(
+            sushiOut = _toFINA(
                 weth,
                 _swap(token0, weth, amount0, address(this)).add(amount1)
             );
@@ -254,7 +254,7 @@ contract SushiMaker is Ownable {
 
     // F1 - F10: OK
     // C1 - C24: OK
-    function _toSUSHI(address token, uint256 amountIn)
+    function _toFINA(address token, uint256 amountIn)
         internal
         returns (uint256 amountOut)
     {

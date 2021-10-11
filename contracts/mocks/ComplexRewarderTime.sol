@@ -18,7 +18,7 @@ contract ComplexRewarderTime is IRewarder,  BoringOwnable{
 
     /// @notice Info of each MCV2 user.
     /// `amount` LP token amount the user has provided.
-    /// `rewardDebt` The amount of SUSHI entitled to the user.
+    /// `rewardDebt` The amount of FINA entitled to the user.
     struct UserInfo {
         uint256 amount;
         uint256 rewardDebt;
@@ -26,7 +26,7 @@ contract ComplexRewarderTime is IRewarder,  BoringOwnable{
 
     /// @notice Info of each MCV2 pool.
     /// `allocPoint` The amount of allocation points assigned to the pool.
-    /// Also known as the amount of SUSHI to distribute per block.
+    /// Also known as the amount of FINA to distribute per block.
     struct PoolInfo {
         uint128 accSushiPerShare;
         uint64 lastRewardTime;
@@ -124,7 +124,7 @@ contract ComplexRewarderTime is IRewarder,  BoringOwnable{
         emit LogPoolAddition(_pid, allocPoint);
     }
 
-    /// @notice Update the given pool's SUSHI allocation point and `IRewarder` contract. Can only be called by the owner.
+    /// @notice Update the given pool's FINA allocation point and `IRewarder` contract. Can only be called by the owner.
     /// @param _pid The index of the pool. See `poolInfo`.
     /// @param _allocPoint New AP of the pool.
     function set(uint256 _pid, uint256 _allocPoint) public onlyOwner {
@@ -136,7 +136,7 @@ contract ComplexRewarderTime is IRewarder,  BoringOwnable{
     /// @notice View function to see pending Token
     /// @param _pid The index of the pool. See `poolInfo`.
     /// @param _user Address of user.
-    /// @return pending SUSHI reward for a given user.
+    /// @return pending FINA reward for a given user.
     function pendingToken(uint256 _pid, address _user) public view returns (uint256 pending) {
         PoolInfo memory pool = poolInfo[_pid];
         UserInfo storage user = userInfo[_pid][_user];

@@ -13,12 +13,12 @@ describe("MasterChef", function () {
     this.minter = this.signers[4]
 
     this.MasterChef = await ethers.getContractFactory("MasterChef")
-    this.SushiToken = await ethers.getContractFactory("SushiToken")
+    this.FinaToken = await ethers.getContractFactory("FinaToken")
     this.ERC20Mock = await ethers.getContractFactory("ERC20Mock", this.minter)
   })
 
   beforeEach(async function () {
-    this.sushi = await this.SushiToken.deploy()
+    this.sushi = await this.FinaToken.deploy()
     await this.sushi.deployed()
   })
 
@@ -91,7 +91,7 @@ describe("MasterChef", function () {
       expect(await this.lp.balanceOf(this.bob.address)).to.equal("1000")
     })
 
-    it("should give out SUSHIs only after farming time", async function () {
+    it("should give out FINAs only after farming time", async function () {
       // 100 per block farming rate starting at block 100 with bonus until block 1000
       this.chef = await this.MasterChef.deploy(this.sushi.address, this.dev.address, "100", "100", "1000")
       await this.chef.deployed()
@@ -127,7 +127,7 @@ describe("MasterChef", function () {
       expect(await this.sushi.totalSupply()).to.equal("5500")
     })
 
-    it("should not distribute SUSHIs if no one deposit", async function () {
+    it("should not distribute FINAs if no one deposit", async function () {
       // 100 per block farming rate starting at block 200 with bonus until block 1000
       this.chef = await this.MasterChef.deploy(this.sushi.address, this.dev.address, "100", "200", "1000")
       await this.chef.deployed()
@@ -152,7 +152,7 @@ describe("MasterChef", function () {
       expect(await this.lp.balanceOf(this.bob.address)).to.equal("1000")
     })
 
-    it("should distribute SUSHIs properly for each staker", async function () {
+    it("should distribute FINAs properly for each staker", async function () {
       // 100 per block farming rate starting at block 300 with bonus until block 1000
       this.chef = await this.MasterChef.deploy(this.sushi.address, this.dev.address, "100", "300", "1000")
       await this.chef.deployed()
@@ -220,7 +220,7 @@ describe("MasterChef", function () {
       expect(await this.lp.balanceOf(this.carol.address)).to.equal("1000")
     })
 
-    it("should give proper SUSHIs allocation to each pool", async function () {
+    it("should give proper FINAs allocation to each pool", async function () {
       // 100 per block farming rate starting at block 400 with bonus until block 1000
       this.chef = await this.MasterChef.deploy(this.sushi.address, this.dev.address, "100", "400", "1000")
       await this.sushi.transferOwnership(this.chef.address)
@@ -247,7 +247,7 @@ describe("MasterChef", function () {
       expect(await this.chef.pendingSushi(1, this.bob.address)).to.equal("3333")
     })
 
-    it("should stop giving bonus SUSHIs after the bonus period ends", async function () {
+    it("should stop giving bonus FINAs after the bonus period ends", async function () {
       // 100 per block farming rate starting at block 500 with bonus until block 600
       this.chef = await this.MasterChef.deploy(this.sushi.address, this.dev.address, "100", "500", "600")
       await this.sushi.transferOwnership(this.chef.address)

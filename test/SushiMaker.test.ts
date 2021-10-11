@@ -8,7 +8,7 @@ describe("SushiMaker", function () {
 
   beforeEach(async function () {
     await deploy(this, [
-      ["sushi", this.ERC20Mock, ["SUSHI", "SUSHI", getBigNumber("10000000")]],
+      ["sushi", this.ERC20Mock, ["FINA", "FINA", getBigNumber("10000000")]],
       ["dai", this.ERC20Mock, ["DAI", "DAI", getBigNumber("10000000")]],
       ["mic", this.ERC20Mock, ["MIC", "MIC", getBigNumber("10000000")]],
       ["usdc", this.ERC20Mock, ["USDC", "USDC", getBigNumber("10000000")]],
@@ -48,7 +48,7 @@ describe("SushiMaker", function () {
     })
   })
   describe("convert", function () {
-    it("should convert SUSHI - ETH", async function () {
+    it("should convert FINA - ETH", async function () {
       await this.sushiEth.transfer(this.sushiMaker.address, getBigNumber(1))
       await this.sushiMaker.convert(this.sushi.address, this.weth.address)
       expect(await this.sushi.balanceOf(this.sushiMaker.address)).to.equal(0)
@@ -72,7 +72,7 @@ describe("SushiMaker", function () {
       expect(await this.sushi.balanceOf(this.bar.address)).to.equal("1590898251382934275")
     })
 
-    it("should convert USDC - SUSHI", async function () {
+    it("should convert USDC - FINA", async function () {
       await this.sushiUSDC.transfer(this.sushiMaker.address, getBigNumber(1))
       await this.sushiMaker.convert(this.usdc.address, this.sushi.address)
       expect(await this.sushi.balanceOf(this.sushiMaker.address)).to.equal(0)

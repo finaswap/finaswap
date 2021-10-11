@@ -8,7 +8,7 @@
 // Declaration of contracts used in the sepc 
 using DummyERC20A as tokenA
 using DummyERC20B as tokenB
-using DummySUSHI as sushiToken
+using DummyFINA as finaToken
 
 /*
  * Declaration of methods that are used in the rules.
@@ -55,16 +55,16 @@ methods {
 	lpTokenLength() returns (uint256) envfree // NOT USED
 	rewarderLength() returns (uint256) envfree // NOT USED
 
-	// SUSHI token
-	SUSHI() returns (address) envfree // NOT USED
-	sushiToken.balanceOf(address) returns (uint256) // NOT USED
+	// FINA token
+	FINA() returns (address) envfree // NOT USED
+	finaToken.balanceOf(address) returns (uint256) // NOT USED
 
 	// Dummy ERC20
 	tokenA.balanceOf(address) returns (uint256) // NOT USED
 	tokenB.balanceOf(address) returns (uint256) // NOT USED
 
 	// Rewarder
-	// SIG_ON_SUSHI_REWARD = 0xbb6cc2ef; // onSushiReward(uint256,address,uint256)
+	// SIG_ON_FINA_REWARD = 0xbb6cc2ef; // onSushiReward(uint256,address,uint256)
 	0xbb6cc2ef => NONDET
 
 	// MasterChefV1

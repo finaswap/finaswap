@@ -53,7 +53,7 @@ contract SushiMakerKashi is Ownable {
         address indexed token0,
         uint256 amount0,
         uint256 amountBENTO,
-        uint256 amountSUSHI
+        uint256 amountFINA
     );
 
     constructor(

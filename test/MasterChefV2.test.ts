@@ -3,7 +3,7 @@ import { advanceBlockTo, advanceBlock, prepare, deploy, getBigNumber, ADDRESS_ZE
 
 describe("MasterChefV2", function () {
   before(async function () {
-    await prepare(this, ['MasterChef', 'SushiToken', 'ERC20Mock', 'MasterChefV2', 'RewarderMock', 'RewarderBrokenMock'])
+    await prepare(this, ['MasterChef', 'FinaToken', 'ERC20Mock', 'MasterChefV2', 'RewarderMock', 'RewarderBrokenMock'])
     await deploy(this, [
       ["brokenRewarder", this.RewarderBrokenMock]
     ])
@@ -11,7 +11,7 @@ describe("MasterChefV2", function () {
 
   beforeEach(async function () {
     await deploy(this, [
-      ["sushi", this.SushiToken],
+      ["sushi", this.FinaToken],
     ])
 
     await deploy(this,
@@ -183,7 +183,7 @@ describe("MasterChefV2", function () {
   })
 
   describe("Harvest", function () {
-    it("Should give back the correct amount of SUSHI and reward", async function () {
+    it("Should give back the correct amount of FINA and reward", async function () {
         await this.r.transfer(this.rewarder.address, getBigNumber(100000))
         await this.chef2.add(10, this.rlp.address, this.rewarder.address)
         await this.rlp.approve(this.chef2.address, getBigNumber(10))
@@ -202,7 +202,7 @@ describe("MasterChefV2", function () {
       await this.chef2.harvest(0, this.alice.address)
     })
 
-    it("Harvest for SUSHI-only pool", async function () {
+    it("Harvest for FINA-only pool", async function () {
       await this.chef2.add(10, this.rlp.address, ADDRESS_ZERO)
       await this.rlp.approve(this.chef2.address, getBigNumber(10))
       expect(await this.chef2.lpToken(0)).to.be.equal(this.rlp.address)
