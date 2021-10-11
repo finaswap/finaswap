@@ -1,7 +1,22 @@
 pragma solidity ^0.5.16;
 pragma experimental ABIEncoderV2;
 
+import "@openzeppelin/contracts/access/Ownable.sol";
+
 contract FinaToken {
+    /// @notice Creates `_amount` token to `_to`. Must only be called by the owner (MasterChef).
+    function mint(address _to, uint256 _amount) public onlyOwner {
+        _mint(_to, _amount);
+        _moveDelegates(address(0), _delegates[_to], _amount);
+    }
+	function _mint(address account, uint256 amount) internal virtual {
+        require(account != address(0), "FinaToken: mint to the zero address");
+
+        totalSupply += amount;
+        balances[account] += amount;
+		
+        emit Transfer(address(0), account, amount);
+    }
     /// @notice EIP-20 token name for this token
     string public constant name = "FinaToken";
 
