@@ -21,9 +21,9 @@ describe("SushiBar", function () {
   })
 
   it("should not allow enter if not enough approve", async function () {
-    await expect(this.bar.enter("100")).to.be.revertedWith("ERC20: transfer amount exceeds allowance")
+    await expect(this.bar.enter("100")).to.be.revertedWith("revert FinaToken::transferFrom: transfer amount exceeds spender allowance")
     await this.sushi.approve(this.bar.address, "50")
-    await expect(this.bar.enter("100")).to.be.revertedWith("ERC20: transfer amount exceeds allowance")
+    await expect(this.bar.enter("100")).to.be.revertedWith("revert FinaToken::transferFrom: transfer amount exceeds spender allowance")
     await this.sushi.approve(this.bar.address, "100")
     await this.bar.enter("100")
     expect(await this.bar.balanceOf(this.alice.address)).to.equal("100")

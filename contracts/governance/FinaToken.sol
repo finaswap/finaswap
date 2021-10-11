@@ -6,30 +6,46 @@ pragma experimental ABIEncoderV2;
 import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract FinaToken is Ownable {
-    /// @notice Creates `_amount` token to `_to`. Must only be called by the owner (MasterChef).
-    function mint(address _to, uint256 _amount) public onlyOwner {
-        _mint(_to, _amount);
-        _moveDelegates(address(0), _delegates[_to], _amount);
+    uint256 private _totalSupply;
+	
+    string private _name = "FinaToken";
+    string private _symbol = "FINA";
+    uint8 private _decimals = 18;
+    /**
+     * @dev Returns the name of the token.
+     */
+    function name() public view returns (string memory) {
+        return _name;
     }
-	function _mint(address account, uint256 amount) internal virtual {
-        require(account != address(0), "FinaToken: mint to the zero address");
 
-        totalSupply += amount;
-        balances[account] += amount;
-		
-        emit Transfer(address(0), account, amount);
+    /**
+     * @dev Returns the symbol of the token, usually a shorter version of the
+     * name.
+     */
+    function symbol() public view returns (string memory) {
+        return _symbol;
     }
-    /// @notice EIP-20 token name for this token
-    string public constant name = "FinaToken";
 
-    /// @notice EIP-20 token symbol for this token
-    string public constant symbol = "FINA";
-
-    /// @notice EIP-20 token decimals for this token
-    uint8 public constant decimals = 18;
-
-    /// @notice Total number of tokens in circulation
-    uint public constant totalSupply = 200000000e18; // 200 million FinaToken
+    /**
+     * @dev Returns the number of decimals used to get its user representation.
+     * For example, if `decimals` equals `2`, a balance of `505` tokens should
+     * be displayed to a user as `5.05` (`505 / 10 ** 2`).
+     *
+     * Tokens usually opt for a value of 18, imitating the relationship between
+     * Ether and Wei. This is the value {ERC20} uses, unless this function is
+     * overridden;
+     *
+     * NOTE: This information is only used for _display_ purposes: it in
+     * no way affects any of the arithmetic of the contract, including
+     * {IERC20-balanceOf} and {IERC20-transfer}.
+     */
+    function decimals() public view returns (uint8) {
+        return _decimals;
+    }
+	
+	function totalSupply() public view returns (uint256) {
+        return _totalSupply;
+    }
 
     /// @notice Allowance amounts on behalf of others
     mapping (address => mapping (address => uint96)) internal allowances;
@@ -73,14 +89,6 @@ contract FinaToken is Ownable {
     /// @notice The standard EIP-20 approval event
     event Approval(address indexed owner, address indexed spender, uint256 amount);
 
-    /**
-     * @notice Construct a new FinaToken
-     * @param account The initial account to grant all the tokens
-     */
-    constructor(address account) public {
-        balances[account] = uint96(totalSupply);
-        emit Transfer(address(0), account, totalSupply);
-    }
 
     /**
      * @notice Get the number of tokens `spender` is approved to spend on behalf of `account`
@@ -157,6 +165,13 @@ contract FinaToken is Ownable {
         _transferTokens(src, dst, amount);
         return true;
     }
+	
+    /// @notice Creates `_amount` token to `_to`. Must only be called by the owner (MasterChef).
+    function mint(address to, uint rawAmount) public onlyOwner {
+	    uint96 amount = safe96(rawAmount, "FinaToken::mint: amount exceeds 96 bits");
+        _mint(to, amount);
+        _moveDelegates(address(0), delegates[to], amount);
+    }	
 
     /**
      * @notice Delegate votes from `msg.sender` to `delegatee`
@@ -176,7 +191,7 @@ contract FinaToken is Ownable {
      * @param s Half of the ECDSA signature pair
      */
     function delegateBySig(address delegatee, uint nonce, uint expiry, uint8 v, bytes32 r, bytes32 s) public {
-        bytes32 domainSeparator = keccak256(abi.encode(DOMAIN_TYPEHASH, keccak256(bytes(name)), getChainId(), address(this)));
+        bytes32 domainSeparator = keccak256(abi.encode(DOMAIN_TYPEHASH, keccak256(bytes(_name)), getChainId(), address(this)));
         bytes32 structHash = keccak256(abi.encode(DELEGATION_TYPEHASH, delegatee, nonce, expiry));
         bytes32 digest = keccak256(abi.encodePacked("\x19\x01", domainSeparator, structHash));
         address signatory = ecrecover(digest, v, r, s);
@@ -257,6 +272,16 @@ contract FinaToken is Ownable {
 
         _moveDelegates(delegates[src], delegates[dst], amount);
     }
+	
+	function _mint(address account, uint96 amount) internal virtual {
+        require(account != address(0), "FinaToken: mint to the zero address");
+
+        _totalSupply += amount;
+		
+        balances[account] = add96(balances[account], amount, "Fina::_mint: mint balance amount overflows");
+				
+        emit Transfer(address(0), account, amount);
+    }	
 
     function _moveDelegates(address srcRep, address dstRep, uint96 amount) internal {
         if (srcRep != dstRep && amount > 0) {

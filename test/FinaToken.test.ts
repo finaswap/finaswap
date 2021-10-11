@@ -59,9 +59,7 @@ describe("FinaToken", function () {
 
   it("should fail if you try to do bad transfers", async function () {
     await this.sushi.mint(this.alice.address, "100")
-    await expect(this.sushi.transfer(this.carol.address, "110")).to.be.revertedWith("ERC20: transfer amount exceeds balance")
-    await expect(this.sushi.connect(this.bob).transfer(this.carol.address, "1", { from: this.bob.address })).to.be.revertedWith(
-      "ERC20: transfer amount exceeds balance"
-    )
+    await expect(this.sushi.transfer(this.carol.address, "110")).to.be.revertedWith("revert FinaToken::_transferTokens: transfer amount exceeds balance")
+    await expect(this.sushi.connect(this.bob).transfer(this.carol.address, "1", { from: this.bob.address })).to.be.revertedWith("revert FinaToken::_transferTokens: transfer amount exceeds balance")
   })
 })
