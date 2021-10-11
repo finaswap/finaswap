@@ -19,5 +19,4 @@ analyze:
         - contracts/SushiToken.sol:SushiToken
         - contracts/SushiBar.sol:SushiBar
         - contracts/MasterChef.sol:MasterChef
-        - contracts/governance/Timelock.sol:Timelock
         - contracts/Migrator.sol:Migrator
