@@ -5,7 +5,7 @@ import { prepare, deploy, getBigNumber, createSLP } from "./utilities"
 
 describe("FinaChiefBanker", function () {
   before(async function () {
-    await prepare(this, ["FinaChiefBanker", "FinaLounge", "FinaChiefBankerExploitMock", "ERC20Mock", "UniswapV2Factory", "UniswapV2Pair", "FinaVaultV1", "KashiPairMediumRiskV1", "PeggedOracleV1"])
+    await prepare(this, ["FinaChiefBanker", "FinaLounge", "FinaChiefBankerExploitMock", "ERC20Mock", "UniswapV2Factory", "UniswapV2Pair", "FinaVaultV1", "BankerPairMediumRiskV1", "PeggedOracleV1"])
   })
 
   beforeEach(async function () {
@@ -19,12 +19,12 @@ describe("FinaChiefBanker", function () {
       ["strudel", this.ERC20Mock, ["$TRDL", "$TRDL", getBigNumber("10000000")]],
       ["factory", this.UniswapV2Factory, [this.alice.address]],
     ])
-    // Deploy Sushi and Kashi contracts
+    // Deploy Sushi and Banker contracts
     await deploy(this, [["lounge", this.FinaLounge, [this.fina.address]]])
     await deploy(this, [["vault", this.FinaVaultV1, [this.weth.address]]])
-    await deploy(this, [["kashiMaster", this.KashiPairMediumRiskV1, [this.vault.address]]])
-    await deploy(this, [["kashiMaker", this.FinaChiefBanker, [this.factory.address, this.lounge.address, this.vault.address, this.fina.address, this.weth.address, this.factory.pairCodeHash()]]])
-    await deploy(this, [["exploiter", this.FinaChiefBankerExploitMock, [this.kashiMaker.address]]])
+    await deploy(this, [["bankerMaster", this.BankerPairMediumRiskV1, [this.vault.address]]])
+    await deploy(this, [["bankerMaker", this.FinaChiefBanker, [this.factory.address, this.lounge.address, this.vault.address, this.fina.address, this.weth.address, this.factory.pairCodeHash()]]])
+    await deploy(this, [["exploiter", this.FinaChiefBankerExploitMock, [this.bankerMaker.address]]])
     await deploy(this, [["oracle", this.PeggedOracleV1]])
     // Create SLPs
     await createSLP(this, "finaEth", this.fina, this.weth, getBigNumber(10))
@@ -35,10 +35,10 @@ describe("FinaChiefBanker", function () {
     await createSLP(this, "finaUSDC", this.fina, this.usdc, getBigNumber(10))
     await createSLP(this, "daiUSDC", this.dai, this.usdc, getBigNumber(10))
     await createSLP(this, "daiMIC", this.dai, this.mic, getBigNumber(10))
-    // Set Kashi fees to Maker
-    await this.kashiMaster.setFeeTo(this.kashiMaker.address)
-    // Whitelist Kashi on Vault
-    await this.vault.whitelistMasterContract(this.kashiMaster.address, true)
+    // Set Banker fees to Maker
+    await this.bankerMaster.setFeeTo(this.bankerMaker.address)
+    // Whitelist Banker on Vault
+    await this.vault.whitelistMasterContract(this.bankerMaster.address, true)
     // Approve and make Vault token deposits
     await this.fina.approve(this.vault.address, getBigNumber(10))
     await this.dai.approve(this.vault.address, getBigNumber(10))
@@ -52,34 +52,34 @@ describe("FinaChiefBanker", function () {
     await this.vault.deposit(this.usdc.address, this.alice.address, this.alice.address, getBigNumber(10), 0)
     await this.vault.deposit(this.weth.address, this.alice.address, this.alice.address, getBigNumber(10), 0)
     await this.vault.deposit(this.strudel.address, this.alice.address, this.alice.address, getBigNumber(10), 0)
-    // Approve Kashi to spend 'alice' Vault tokens
-    await this.vault.setMasterContractApproval(this.alice.address, this.kashiMaster.address, true, "0", "0x0000000000000000000000000000000000000000000000000000000000000000", "0x0000000000000000000000000000000000000000000000000000000000000000")
-    // **TO-DO - Initialize Kashi Pair**
+    // Approve Banker to spend 'alice' Vault tokens
+    await this.vault.setMasterContractApproval(this.alice.address, this.bankerMaster.address, true, "0", "0x0000000000000000000000000000000000000000000000000000000000000000", "0x0000000000000000000000000000000000000000000000000000000000000000")
+    // **TO-DO - Initialize Banker Pair**
     //const oracleData = await this.oracle.getDataParameter("1")
     //const initData = defaultAbiCoder.encode(["address", "address", "address", "bytes"], [this.fina.address, this.dai.address, this.oracle.address, oracleData])
-    //await this.vault.deploy(this.KashiMaster.address, initData, true)
+    //await this.vault.deploy(this.BankerMaster.address, initData, true)
   })
 
   describe("setBridge", function () {
     it("only allows the owner to set bridge", async function () {
-      await expect(this.kashiMaker.connect(this.bob).setBridge(this.fina.address, this.weth.address, { from: this.bob.address })).to.be.revertedWith("Ownable: caller is not the owner")
+      await expect(this.bankerMaker.connect(this.bob).setBridge(this.fina.address, this.weth.address, { from: this.bob.address })).to.be.revertedWith("Ownable: caller is not the owner")
     })
     
     it("does not allow to set bridge for Sushi", async function () {
-      await expect(this.kashiMaker.setBridge(this.fina.address, this.weth.address)).to.be.revertedWith("Maker: Invalid bridge")
+      await expect(this.bankerMaker.setBridge(this.fina.address, this.weth.address)).to.be.revertedWith("Maker: Invalid bridge")
     })
 
     it("does not allow to set bridge for WETH", async function () {
-      await expect(this.kashiMaker.setBridge(this.weth.address, this.fina.address)).to.be.revertedWith("Maker: Invalid bridge")
+      await expect(this.bankerMaker.setBridge(this.weth.address, this.fina.address)).to.be.revertedWith("Maker: Invalid bridge")
     })
 
     it("does not allow to set bridge to itself", async function () {
-      await expect(this.kashiMaker.setBridge(this.dai.address, this.dai.address)).to.be.revertedWith("Maker: Invalid bridge")
+      await expect(this.bankerMaker.setBridge(this.dai.address, this.dai.address)).to.be.revertedWith("Maker: Invalid bridge")
     })
 
     it("emits correct event on bridge", async function () {
-      await expect(this.kashiMaker.setBridge(this.dai.address, this.fina.address))
-        .to.emit(this.kashiMaker, "LogBridgeSet")
+      await expect(this.bankerMaker.setBridge(this.dai.address, this.fina.address))
+        .to.emit(this.bankerMaker, "LogBridgeSet")
         .withArgs(this.dai.address, this.fina.address)
     })
   })

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: UNLICENSED
-// Kashi Lending Medium Risk
+// Banker Lending Medium Risk
 
 //  __  __             __    __      _____                  __ __
 // |  |/  .---.-.-----|  |--|__|    |     |_.-----.-----.--|  |__.-----.-----.
@@ -755,14 +755,14 @@ interface ISwapper {
     ) external returns (uint256 shareUsed, uint256 shareReturned);
 }
 
-// File contracts/KashiPair.sol
+// File contracts/BankerPair.sol
 // License-Identifier: UNLICENSED
-// Kashi Lending Medium Risk
+// Banker Lending Medium Risk
 
-/// @title KashiPair
+/// @title BankerPair
 /// @dev This contract allows contract calls to any contract (except FinaVault)
 /// from arbitrary callers thus, don't trust calls from this contract in any circumstances.
-contract KashiPairMediumRiskV1 is ERC20, BoringOwnable, IMasterContract {
+contract BankerPairMediumRiskV1 is ERC20, BoringOwnable, IMasterContract {
     using BoringMath for uint256;
     using BoringMath128 for uint128;
     using RebaseLibrary for Rebase;
@@ -781,7 +781,7 @@ contract KashiPairMediumRiskV1 is ERC20, BoringOwnable, IMasterContract {
 
     // Immutables (for MasterContract and all clones)
     IFinaVaultV1 public immutable finaVault;
-    KashiPairMediumRiskV1 public immutable masterContract;
+    BankerPairMediumRiskV1 public immutable masterContract;
 
     // MasterContract variables
     address public feeTo;
@@ -796,7 +796,7 @@ contract KashiPairMediumRiskV1 is ERC20, BoringOwnable, IMasterContract {
 
     // Total amounts
     uint256 public totalCollateralShare; // Total collateral supplied
-    Rebase public totalAsset; // elastic = FinaVault shares held by the KashiPair, base = Total fractions held by asset suppliers
+    Rebase public totalAsset; // elastic = FinaVault shares held by the BankerPair, base = Total fractions held by asset suppliers
     Rebase public totalBorrow; // elastic = Total token amount to be repayed by borrowers, base = Total parts of the debt held by borrowers
 
     // User balances
@@ -822,7 +822,7 @@ contract KashiPairMediumRiskV1 is ERC20, BoringOwnable, IMasterContract {
     }
 
     function name() external view returns (string memory) {
-        return string(abi.encodePacked("Kashi Medium Risk ", collateral.safeName(), "/", asset.safeName(), "-", oracle.name(oracleData)));
+        return string(abi.encodePacked("Banker Medium Risk ", collateral.safeName(), "/", asset.safeName(), "-", oracle.name(oracleData)));
     }
 
     function decimals() external view returns (uint8) {
@@ -834,7 +834,7 @@ contract KashiPairMediumRiskV1 is ERC20, BoringOwnable, IMasterContract {
         return totalAsset.base;
     }
 
-    // Settings for the Medium Risk KashiPair
+    // Settings for the Medium Risk BankerPair
     uint256 private constant CLOSED_COLLATERIZATION_RATE = 75000; // 75%
     uint256 private constant OPEN_COLLATERIZATION_RATE = 77000; // 77%
     uint256 private constant COLLATERIZATION_RATE_PRECISION = 1e5; // Must be less than EXCHANGE_RATE_PRECISION (due to optimization in math)
@@ -871,9 +871,9 @@ contract KashiPairMediumRiskV1 is ERC20, BoringOwnable, IMasterContract {
     /// @notice Serves as the constructor for clones, as clones can't have a regular constructor
     /// @dev `data` is abi encoded in the format: (IERC20 collateral, IERC20 asset, IOracle oracle, bytes oracleData)
     function init(bytes calldata data) public payable override {
-        require(address(collateral) == address(0), "KashiPair: already initialized");
+        require(address(collateral) == address(0), "BankerPair: already initialized");
         (collateral, asset, oracle, oracleData) = abi.decode(data, (IERC20, IERC20, IOracle, bytes));
-        require(address(collateral) != address(0), "KashiPair: bad pair");
+        require(address(collateral) != address(0), "BankerPair: bad pair");
 
         accrueInfo.interestPerSecond = uint64(STARTING_INTEREST_PER_SECOND); // 1% APR, with 1e18 being 100%
     }
@@ -968,7 +968,7 @@ contract KashiPairMediumRiskV1 is ERC20, BoringOwnable, IMasterContract {
     /// @dev Checks if the user is solvent in the closed liquidation case at the end of the function body.
     modifier solvent() {
         _;
-        require(_isSolvent(msg.sender, false, exchangeRate), "KashiPair: user insolvent");
+        require(_isSolvent(msg.sender, false, exchangeRate), "BankerPair: user insolvent");
     }
 
     /// @notice Gets the exchange rate. I.e how much collateral to buy 1e18 asset.
@@ -1001,7 +1001,7 @@ contract KashiPairMediumRiskV1 is ERC20, BoringOwnable, IMasterContract {
         bool skim
     ) internal {
         if (skim) {
-            require(share <= finaVault.balanceOf(token, address(this)).sub(total), "KashiPair: Skim too much");
+            require(share <= finaVault.balanceOf(token, address(this)).sub(total), "BankerPair: Skim too much");
         } else {
             finaVault.transfer(token, msg.sender, address(this), share);
         }
@@ -1083,7 +1083,7 @@ contract KashiPairMediumRiskV1 is ERC20, BoringOwnable, IMasterContract {
         balanceOf[msg.sender] = balanceOf[msg.sender].sub(fraction);
         _totalAsset.elastic = _totalAsset.elastic.sub(share.to128());
         _totalAsset.base = _totalAsset.base.sub(fraction.to128());
-        require(_totalAsset.base >= 1000, "Kashi: below minimum");
+        require(_totalAsset.base >= 1000, "Banker: below minimum");
         totalAsset = _totalAsset;
         emit LogRemoveAsset(msg.sender, to, share, fraction);
         finaVault.transfer(asset, address(this), to, share);
@@ -1108,7 +1108,7 @@ contract KashiPairMediumRiskV1 is ERC20, BoringOwnable, IMasterContract {
 
         share = finaVault.toShare(asset, amount, false);
         Rebase memory _totalAsset = totalAsset;
-        require(_totalAsset.base >= 1000, "Kashi: below minimum");
+        require(_totalAsset.base >= 1000, "Banker: below minimum");
         _totalAsset.elastic = _totalAsset.elastic.sub(share.to128());
         totalAsset = _totalAsset;
         finaVault.transfer(asset, address(this), to, share);
@@ -1232,10 +1232,10 @@ contract KashiPairMediumRiskV1 is ERC20, BoringOwnable, IMasterContract {
             callData = abi.encodePacked(callData, value1, value2);
         }
 
-        require(callee != address(finaVault) && callee != address(this), "KashiPair: can't call");
+        require(callee != address(finaVault) && callee != address(this), "BankerPair: can't call");
 
         (bool success, bytes memory returnData) = callee.call{value: value}(callData);
-        require(success, "KashiPair: call failed");
+        require(success, "BankerPair: call failed");
         return (returnData, returnValues);
     }
 
@@ -1286,7 +1286,7 @@ contract KashiPairMediumRiskV1 is ERC20, BoringOwnable, IMasterContract {
             } else if (action == ACTION_UPDATE_EXCHANGE_RATE) {
                 (bool must_update, uint256 minRate, uint256 maxRate) = abi.decode(datas[i], (bool, uint256, uint256));
                 (bool updated, uint256 rate) = updateExchangeRate();
-                require((!must_update || updated) && rate > minRate && (maxRate == 0 || rate > maxRate), "KashiPair: rate not ok");
+                require((!must_update || updated) && rate > minRate && (maxRate == 0 || rate > maxRate), "BankerPair: rate not ok");
             } else if (action == ACTION_VAULT_SETAPPROVAL) {
                 (address user, address _masterContract, bool approved, uint8 v, bytes32 r, bytes32 s) =
                     abi.decode(datas[i], (address, address, bool, uint8, bytes32, bytes32));
@@ -1319,7 +1319,7 @@ contract KashiPairMediumRiskV1 is ERC20, BoringOwnable, IMasterContract {
         }
 
         if (status.needsSolvencyCheck) {
-            require(_isSolvent(msg.sender, false, exchangeRate), "KashiPair: user insolvent");
+            require(_isSolvent(msg.sender, false, exchangeRate), "BankerPair: user insolvent");
         }
     }
 
@@ -1372,7 +1372,7 @@ contract KashiPairMediumRiskV1 is ERC20, BoringOwnable, IMasterContract {
                 allBorrowPart = allBorrowPart.add(borrowPart);
             }
         }
-        require(allBorrowAmount != 0, "KashiPair: all are solvent");
+        require(allBorrowAmount != 0, "BankerPair: all are solvent");
         _totalBorrow.elastic = _totalBorrow.elastic.sub(allBorrowAmount.to128());
         _totalBorrow.base = _totalBorrow.base.sub(allBorrowPart.to128());
         totalBorrow = _totalBorrow;
@@ -1382,7 +1382,7 @@ contract KashiPairMediumRiskV1 is ERC20, BoringOwnable, IMasterContract {
 
         if (!open) {
             // Closed liquidation using a pre-approved swapper for the benefit of the LPs
-            require(masterContract.swappers(swapper), "KashiPair: Invalid swapper");
+            require(masterContract.swappers(swapper), "BankerPair: Invalid swapper");
 
             // Swaps the users' collateral for the borrowed asset
             finaVault.transfer(collateral, address(this), address(swapper), allCollateralShare);

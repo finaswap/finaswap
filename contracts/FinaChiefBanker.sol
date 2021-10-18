@@ -19,7 +19,7 @@ interface IFinaVaultWithdraw {
     ) external returns (uint256 amountOut, uint256 shareOut);
 }
 
-interface IKashiWithdrawFee {
+interface IBankerWithdrawFee {
     function asset() external view returns (address);
     function balanceOf(address account) external view returns (uint256);
     function withdrawFees() external;
@@ -27,7 +27,7 @@ interface IKashiWithdrawFee {
 }
 
 // FinaChiefBanker is FinaMaster's left hand and kinda a wizard. He can cook up Sushi from pretty much anything!
-// This contract handles "serving up" rewards for xSushi holders by trading tokens collected from Kashi fees for Sushi.
+// This contract handles "serving up" rewards for xSushi holders by trading tokens collected from Banker fees for Sushi.
 contract FinaChiefBanker is Ownable {
     using SafeMath for uint256;
     using SafeERC20 for IERC20;
@@ -89,25 +89,25 @@ contract FinaChiefBanker is Ownable {
         _;
     }
 
-    function convert(IKashiWithdrawFee kashiPair) external onlyEOA {
-        _convert(kashiPair);
+    function convert(IBankerWithdrawFee bankerPair) external onlyEOA {
+        _convert(bankerPair);
     }
 
-    function convertMultiple(IKashiWithdrawFee[] calldata kashiPair) external onlyEOA {
-        for (uint256 i = 0; i < kashiPair.length; i++) {
-            _convert(kashiPair[i]);
+    function convertMultiple(IBankerWithdrawFee[] calldata bankerPair) external onlyEOA {
+        for (uint256 i = 0; i < bankerPair.length; i++) {
+            _convert(bankerPair[i]);
         }
     }
 
-    function _convert(IKashiWithdrawFee kashiPair) private {
-        // update Kashi fees for this Maker contract (`feeTo`)
-        kashiPair.withdrawFees();
+    function _convert(IBankerWithdrawFee bankerPair) private {
+        // update Banker fees for this Maker contract (`feeTo`)
+        bankerPair.withdrawFees();
 
-        // convert updated Kashi balance to Vault shares
-        uint256 vaultShares = kashiPair.removeAsset(address(this), kashiPair.balanceOf(address(this)));
+        // convert updated Banker balance to Vault shares
+        uint256 vaultShares = bankerPair.removeAsset(address(this), bankerPair.balanceOf(address(this)));
 
-        // convert Vault shares to underlying Kashi asset (`token0`) balance (`amount0`) for Maker
-        address token0 = kashiPair.asset();
+        // convert Vault shares to underlying Banker asset (`token0`) balance (`amount0`) for Maker
+        address token0 = bankerPair.asset();
         (uint256 amount0, ) = finaVault.withdraw(IERC20(token0), address(this), address(this), 0, vaultShares);
 
         emit LogConvert(
