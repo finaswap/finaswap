@@ -12,12 +12,12 @@ contract RewarderMock is IRewarder {
     uint256 private immutable rewardMultiplier;
     IERC20 private immutable rewardToken;
     uint256 private constant REWARD_TOKEN_DIVISOR = 1e18;
-    address private immutable MASTERCHEF_V2;
+    address private immutable FINAMASTER_V2;
 
-    constructor (uint256 _rewardMultiplier, IERC20 _rewardToken, address _MASTERCHEF_V2) public {
+    constructor (uint256 _rewardMultiplier, IERC20 _rewardToken, address _FINAMASTER_V2) public {
         rewardMultiplier = _rewardMultiplier;
         rewardToken = _rewardToken;
-        MASTERCHEF_V2 = _MASTERCHEF_V2;
+        FINAMASTER_V2 = _FINAMASTER_V2;
     }
 
     function onSushiReward (uint256, address user, address to, uint256 sushiAmount, uint256) onlyMCV2 override external {
@@ -40,7 +40,7 @@ contract RewarderMock is IRewarder {
 
     modifier onlyMCV2 {
         require(
-            msg.sender == MASTERCHEF_V2,
+            msg.sender == FINAMASTER_V2,
             "Only MCV2 can call this function."
         );
         _;

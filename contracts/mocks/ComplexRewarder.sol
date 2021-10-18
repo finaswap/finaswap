@@ -46,7 +46,7 @@ contract ComplexRewarder is IRewarder,  BoringOwnable{
     uint256 public tokenPerBlock;
     uint256 private constant ACC_TOKEN_PRECISION = 1e12;
 
-    address private immutable MASTERCHEF_V2;
+    address private immutable FINAMASTER_V2;
 
     event LogOnReward(address indexed user, uint256 indexed pid, uint256 amount, address indexed to);
     event LogPoolAddition(uint256 indexed pid, uint256 allocPoint);
@@ -54,10 +54,10 @@ contract ComplexRewarder is IRewarder,  BoringOwnable{
     event LogUpdatePool(uint256 indexed pid, uint64 lastRewardBlock, uint256 lpSupply, uint256 accSushiPerShare);
     event LogInit();
 
-    constructor (IERC20 _rewardToken, uint256 _tokenPerBlock, address _MASTERCHEF_V2) public {
+    constructor (IERC20 _rewardToken, uint256 _tokenPerBlock, address _FINAMASTER_V2) public {
         rewardToken = _rewardToken;
         tokenPerBlock = _tokenPerBlock;
-        MASTERCHEF_V2 = _MASTERCHEF_V2;
+        FINAMASTER_V2 = _FINAMASTER_V2;
     }
 
 
@@ -87,7 +87,7 @@ contract ComplexRewarder is IRewarder,  BoringOwnable{
 
     modifier onlyMCV2 {
         require(
-            msg.sender == MASTERCHEF_V2,
+            msg.sender == FINAMASTER_V2,
             "Only MCV2 can call this function."
         );
         _;
@@ -133,7 +133,7 @@ contract ComplexRewarder is IRewarder,  BoringOwnable{
         PoolInfo memory pool = poolInfo[_pid];
         UserInfo storage user = userInfo[_pid][_user];
         uint256 accSushiPerShare = pool.accSushiPerShare;
-        uint256 lpSupply = FinaMasterV2(MASTERCHEF_V2).lpToken(_pid).balanceOf(MASTERCHEF_V2);
+        uint256 lpSupply = FinaMasterV2(FINAMASTER_V2).lpToken(_pid).balanceOf(FINAMASTER_V2);
         if (block.number > pool.lastRewardBlock && lpSupply != 0) {
             uint256 blocks = block.number.sub(pool.lastRewardBlock);
             uint256 sushiReward = blocks.mul(tokenPerBlock).mul(pool.allocPoint) / totalAllocPoint;
@@ -158,7 +158,7 @@ contract ComplexRewarder is IRewarder,  BoringOwnable{
         pool = poolInfo[pid];
         require(pool.lastRewardBlock != 0, "Pool does not exist");
         if (block.number > pool.lastRewardBlock) {
-            uint256 lpSupply = FinaMasterV2(MASTERCHEF_V2).lpToken(pid).balanceOf(MASTERCHEF_V2);
+            uint256 lpSupply = FinaMasterV2(FINAMASTER_V2).lpToken(pid).balanceOf(FINAMASTER_V2);
 
             if (lpSupply > 0) {
                 uint256 blocks = block.number.sub(pool.lastRewardBlock);

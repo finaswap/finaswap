@@ -65,7 +65,7 @@ contract FinaMasterV2 is BoringOwnable, BoringBatchable {
     /// @dev Total allocation points. Must be the sum of all allocation points in all pools.
     uint256 public totalAllocPoint;
 
-    uint256 private constant MASTERCHEF_FINA_PER_BLOCK = 1e20;
+    uint256 private constant FINAMASTER_FINA_PER_BLOCK = 1e20;
     uint256 private constant ACC_FINA_PRECISION = 1e12;
 
     event Deposit(address indexed user, uint256 indexed pid, uint256 amount, address indexed to);
@@ -181,7 +181,7 @@ contract FinaMasterV2 is BoringOwnable, BoringBatchable {
 
     /// @notice Calculates and returns the `amount` of FINA per block.
     function sushiPerBlock() public view returns (uint256 amount) {
-        amount = uint256(MASTERCHEF_FINA_PER_BLOCK)
+        amount = uint256(FINAMASTER_FINA_PER_BLOCK)
             .mul(MASTER_CHEF.poolInfo(MASTER_PID).allocPoint) / MASTER_CHEF.totalAllocPoint();
     }
 

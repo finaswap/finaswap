@@ -49,15 +49,15 @@ contract CloneRewarderTimeDual is IRewarder,  BoringOwnable{
     IERC20 public masterLpToken;
     uint256 private constant ACC_TOKEN_PRECISION = 1e12;
 
-    address public immutable MASTERCHEF_V2;
+    address public immutable FINAMASTER_V2;
 
     event LogOnReward(address indexed user, uint256 indexed pid, uint256 amount1, uint256 amount2, address indexed to);
     event LogUpdatePool(uint256 indexed pid, uint64 lastRewardTime, uint256 lpSupply, uint256 accToken1PerShare, uint256 accToken2PerShare);
     event LogRewardPerSecond(uint256 rewardPerSecond1, uint256 rewardPerSecond2);
     event LogInit(IERC20 rewardToken1, IERC20 rewardToken2, address owner, uint256 rewardPerSecond1, uint256 rewardPerSecond2, IERC20 indexed masterLpToken);
 
-    constructor (address _MASTERCHEF_V2) public {
-        MASTERCHEF_V2 = _MASTERCHEF_V2;
+    constructor (address _FINAMASTER_V2) public {
+        FINAMASTER_V2 = _FINAMASTER_V2;
     }
 
     /// @notice Serves as the constructor for clones, as clones can't have a regular constructor
@@ -70,7 +70,7 @@ contract CloneRewarderTimeDual is IRewarder,  BoringOwnable{
     }
 
     function onSushiReward (uint256 pid, address _user, address to, uint256, uint256 lpTokenAmount) onlyMCV2 override external {
-        require(IFinaMasterV2(MASTERCHEF_V2).lpToken(pid) == masterLpToken);
+        require(IFinaMasterV2(FINAMASTER_V2).lpToken(pid) == masterLpToken);
 
         PoolInfo memory pool = updatePool(pid);
         UserInfo memory _userInfo = userInfo[pid][_user];
@@ -126,7 +126,7 @@ contract CloneRewarderTimeDual is IRewarder,  BoringOwnable{
 
     modifier onlyMCV2 {
         require(
-            msg.sender == MASTERCHEF_V2,
+            msg.sender == FINAMASTER_V2,
             "Only MCV2 can call this function."
         );
         _;
@@ -140,7 +140,7 @@ contract CloneRewarderTimeDual is IRewarder,  BoringOwnable{
         UserInfo storage user = userInfo[_pid][_user];
         uint256 accToken1PerShare = pool.accToken1PerShare;
         uint256 accToken2PerShare = pool.accToken2PerShare;
-        uint256 lpSupply = IFinaMasterV2(MASTERCHEF_V2).lpToken(_pid).balanceOf(MASTERCHEF_V2);
+        uint256 lpSupply = IFinaMasterV2(FINAMASTER_V2).lpToken(_pid).balanceOf(FINAMASTER_V2);
         if (block.timestamp > pool.lastRewardTime && lpSupply != 0) {
             uint256 time = block.timestamp.sub(pool.lastRewardTime);
             uint256 pending1 = time.mul(rewardPerSecond1);
@@ -158,7 +158,7 @@ contract CloneRewarderTimeDual is IRewarder,  BoringOwnable{
     function updatePool(uint256 pid) public returns (PoolInfo memory pool) {
         pool = poolInfo[pid];
         if (block.timestamp > pool.lastRewardTime) {
-            uint256 lpSupply = IFinaMasterV2(MASTERCHEF_V2).lpToken(pid).balanceOf(MASTERCHEF_V2);
+            uint256 lpSupply = IFinaMasterV2(FINAMASTER_V2).lpToken(pid).balanceOf(FINAMASTER_V2);
 
             if (lpSupply > 0) {
                 uint256 time = block.timestamp.sub(pool.lastRewardTime);
