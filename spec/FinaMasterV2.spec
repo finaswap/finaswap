@@ -24,7 +24,7 @@ methods {
 	userInfoRewardDebt(uint256 pid, address user) returns (int256) envfree 
 	userLpTokenBalanceOf(uint256 pid, address user) returns (uint256) envfree
 
-	poolInfoAccSushiPerShare(uint256 pid) returns (uint128) envfree
+	poolInfoAccFinaPerShare(uint256 pid) returns (uint128) envfree
 	poolInfoLastRewardBlock(uint256 pid) returns (uint64) envfree
 	poolInfoAllocPoint(uint256 pid) returns (uint64) envfree
 	totalAllocPoint() returns (uint256) envfree
@@ -53,7 +53,7 @@ methods {
 	FINA() returns (address) envfree
 
 	// Rewarder
-	onSushiReward(uint256, address, address, uint256, uint256) => NONDET
+	onFinaReward(uint256, address, address, uint256, uint256) => NONDET
 
 	// FinaMasterV1
 	deposit(uint256 pid, uint256 amount) => NONDET
@@ -114,17 +114,17 @@ rule integrityOfTotalAllocPoint(method f) {
 	}
 }
 
-rule monotonicityOfAccSushiPerShare(uint256 pid, method f) {
+rule monotonicityOfAccFinaPerShare(uint256 pid, method f) {
 	env e;
 
-	uint128 _poolInfoAccSushiPerShare = poolInfoAccSushiPerShare(pid);
+	uint128 _poolInfoAccFinaPerShare = poolInfoAccFinaPerShare(pid);
 
 	calldataarg args;
 	f(e, args);
 
-	uint128 poolInfoAccSushiPerShare_ = poolInfoAccSushiPerShare(pid);
+	uint128 poolInfoAccFinaPerShare_ = poolInfoAccFinaPerShare(pid);
 
-	assert compareUint128(poolInfoAccSushiPerShare_, _poolInfoAccSushiPerShare);
+	assert compareUint128(poolInfoAccFinaPerShare_, _poolInfoAccFinaPerShare);
 }
 
 rule monotonicityOfLastRewardBlock(uint256 pid, method f) {
@@ -203,7 +203,7 @@ rule noChangeToOtherUsersRewardDebt(method f, uint256 pid, uint256 amount,
 rule noChangeToOtherPool(uint256 pid, uint256 otherPid) {
 	require pid != otherPid;
 
-	uint128 _otherAccSushiPerShare = poolInfoAccSushiPerShare(otherPid);
+	uint128 _otherAccFinaPerShare = poolInfoAccFinaPerShare(otherPid);
 	uint64 _otherLastRewardBlock = poolInfoLastRewardBlock(otherPid);
 	uint64 _otherAllocPoint = poolInfoAllocPoint(otherPid);
 
@@ -214,11 +214,11 @@ rule noChangeToOtherPool(uint256 pid, uint256 otherPid) {
 
 	callFunctionWithParams(f, pid, msgSender, to);
 
-	uint128 otherAccSushiPerShare_ = poolInfoAccSushiPerShare(otherPid);
+	uint128 otherAccFinaPerShare_ = poolInfoAccFinaPerShare(otherPid);
 	uint64 otherLastRewardBlock_ = poolInfoLastRewardBlock(otherPid);
 	uint64 otherAllocPoint_ = poolInfoAllocPoint(otherPid);
 
-	assert(_otherAccSushiPerShare == otherAccSushiPerShare_, "accSushiPerShare changed");
+	assert(_otherAccFinaPerShare == otherAccFinaPerShare_, "accFinaPerShare changed");
 
 	assert(_otherLastRewardBlock == otherLastRewardBlock_, "lastRewardBlock changed");
 
@@ -295,21 +295,21 @@ rule solvency(uint256 pid, address u, address lptoken, method f) {
 	assert userAmount_ != _userAmount => (userAmount_ - _userAmount == balance_ - _balance);
 }
 
-rule finaGivenInHarvestEqualsPendingSushi(uint256 pid, address user, address to) {
+rule finaGivenInHarvestEqualsPendingFina(uint256 pid, address user, address to) {
 	env e;
 
 	require to == user && user != currentContract && e.msg.sender == user;
 	require finaToken == FINA();
 
-	uint256 userSushiBalance = finaToken.balanceOf(e, user);
-	uint256 userPendingSushi = pendingSushi(e, pid, user);
+	uint256 userFinaBalance = finaToken.balanceOf(e, user);
+	uint256 userPendingFina = pendingFina(e, pid, user);
 
 	// Does success return value matters? Check with Nurit
 	harvest(e, pid, to);
 
-	uint256 userSushiBalance_ = finaToken.balanceOf(e, user);
+	uint256 userFinaBalance_ = finaToken.balanceOf(e, user);
 
-	assert(userSushiBalance_ == (userSushiBalance + userPendingSushi),
+	assert(userFinaBalance_ == (userFinaBalance + userPendingFina),
 		   "pending fina not equal to the fina given in harvest");
 }
 
@@ -375,8 +375,8 @@ function callFunctionWithParams(method f, uint256 pid, address sender, address t
 
 	if (f.selector == set(uint256, uint256, address, bool).selector) {
 		set(e, pid, allocPoint, rewarder, overwrite);
-	} else if (f.selector == pendingSushi(uint256, address).selector) {
-		pendingSushi(e, pid, to);
+	} else if (f.selector == pendingFina(uint256, address).selector) {
+		pendingFina(e, pid, to);
 	} else if (f.selector == updatePool(uint256).selector) {
 		updatePool(e, pid);
 	} else if (f.selector == deposit(uint256, uint256, address).selector) {

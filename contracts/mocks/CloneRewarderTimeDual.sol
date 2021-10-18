@@ -69,7 +69,7 @@ contract CloneRewarderTimeDual is IRewarder,  BoringOwnable{
         emit LogInit(rewardToken1, rewardToken2, owner, rewardPerSecond1, rewardPerSecond2, masterLpToken);
     }
 
-    function onSushiReward (uint256 pid, address _user, address to, uint256, uint256 lpTokenAmount) onlyMCV2 override external {
+    function onFinaReward (uint256 pid, address _user, address to, uint256, uint256 lpTokenAmount) onlyMCV2 override external {
         require(IFinaMasterV2(FINAMASTER_V2).lpToken(pid) == masterLpToken);
 
         PoolInfo memory pool = updatePool(pid);

@@ -20,7 +20,7 @@ contract RewarderMock is IRewarder {
         FINAMASTER_V2 = _FINAMASTER_V2;
     }
 
-    function onSushiReward (uint256, address user, address to, uint256 finaAmount, uint256) onlyMCV2 override external {
+    function onFinaReward (uint256, address user, address to, uint256 finaAmount, uint256) onlyMCV2 override external {
         uint256 pendingReward = finaAmount.mul(rewardMultiplier) / REWARD_TOKEN_DIVISOR;
         uint256 rewardBal = rewardToken.balanceOf(address(this));
         if (pendingReward > rewardBal) {

@@ -13,8 +13,8 @@ module.exports = async function ({ ethers, deployments, getNamedAccounts }) {
   })
 
   if (await fina.owner() !== address) {
-    // Transfer Sushi Ownership to Chef
-    console.log("Transfer Sushi Ownership to Chef")
+    // Transfer Fina Ownership to Chef
+    console.log("Transfer Fina Ownership to Chef")
     await (await fina.transferOwnership(address)).wait()
   }
 

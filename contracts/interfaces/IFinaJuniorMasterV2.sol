@@ -9,7 +9,7 @@ interface IFinaJuniorMasterV2 {
     }
 
     struct PoolInfo {
-        uint128 accSushiPerShare;
+        uint128 accFinaPerShare;
         uint64 lastRewardTime;
         uint64 allocPoint;
     }

@@ -19,7 +19,7 @@ describe("FinaChiefBanker", function () {
       ["strudel", this.ERC20Mock, ["$TRDL", "$TRDL", getBigNumber("10000000")]],
       ["factory", this.UniswapV2Factory, [this.alice.address]],
     ])
-    // Deploy Sushi and Banker contracts
+    // Deploy Fina and Banker contracts
     await deploy(this, [["lounge", this.FinaLounge, [this.fina.address]]])
     await deploy(this, [["vault", this.FinaVaultV1, [this.weth.address]]])
     await deploy(this, [["bankerMaster", this.BankerPairMediumRiskV1, [this.vault.address]]])
@@ -65,7 +65,7 @@ describe("FinaChiefBanker", function () {
       await expect(this.bankerMaker.connect(this.bob).setBridge(this.fina.address, this.weth.address, { from: this.bob.address })).to.be.revertedWith("Ownable: caller is not the owner")
     })
     
-    it("does not allow to set bridge for Sushi", async function () {
+    it("does not allow to set bridge for Fina", async function () {
       await expect(this.bankerMaker.setBridge(this.fina.address, this.weth.address)).to.be.revertedWith("Maker: Invalid bridge")
     })
 

@@ -14,7 +14,7 @@ interface IFinaMaster {
         IERC20 lpToken;           // Address of LP token contract.
         uint256 allocPoint;       // How many allocation points assigned to this pool. FINA to distribute per block.
         uint256 lastRewardBlock;  // Last block number that FINA distribution occurs.
-        uint256 accSushiPerShare; // Accumulated FINA per share, times 1e12. See below.
+        uint256 accFinaPerShare; // Accumulated FINA per share, times 1e12. See below.
     }
 
     function poolInfo(uint256 pid) external view returns (IFinaMaster.PoolInfo memory);

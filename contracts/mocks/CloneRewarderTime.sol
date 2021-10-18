@@ -64,7 +64,7 @@ contract CloneRewarderTime is IRewarder,  BoringOwnable{
         emit LogInit(rewardToken, owner, rewardPerSecond, masterLpToken);
     }
 
-    function onSushiReward (uint256 pid, address _user, address to, uint256, uint256 lpTokenAmount) onlyMCV2 override external {
+    function onFinaReward (uint256 pid, address _user, address to, uint256, uint256 lpTokenAmount) onlyMCV2 override external {
         require(IFinaMasterV2(FINAMASTER_V2).lpToken(pid) == masterLpToken);
 
         PoolInfo memory pool = updatePool(pid);
@@ -97,7 +97,7 @@ contract CloneRewarderTime is IRewarder,  BoringOwnable{
     }
 
     /// @notice Sets the fina per second to be distributed. Can only be called by the owner.
-    /// @param _rewardPerSecond The amount of Sushi to be distributed per second.
+    /// @param _rewardPerSecond The amount of Fina to be distributed per second.
     function setRewardPerSecond(uint256 _rewardPerSecond) public onlyOwner {
         rewardPerSecond = _rewardPerSecond;
         emit LogRewardPerSecond(_rewardPerSecond);

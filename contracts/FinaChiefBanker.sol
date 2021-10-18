@@ -26,8 +26,8 @@ interface IBankerWithdrawFee {
     function removeAsset(address to, uint256 fraction) external returns (uint256 share);
 }
 
-// FinaChiefBanker is FinaMaster's left hand and kinda a wizard. He can cook up Sushi from pretty much anything!
-// This contract handles "serving up" rewards for xSushi holders by trading tokens collected from Banker fees for Sushi.
+// FinaChiefBanker is FinaMaster's left hand and kinda a wizard. He can cook up Fina from pretty much anything!
+// This contract handles "serving up" rewards for xFina holders by trading tokens collected from Banker fees for Fina.
 contract FinaChiefBanker is Ownable {
     using SafeMath for uint256;
     using SafeERC20 for IERC20;

@@ -39,7 +39,7 @@ contract FinaMasterV2 is BoringOwnable, BoringBatchable {
     /// `allocPoint` The amount of allocation points assigned to the pool.
     /// Also known as the amount of FINA to distribute per block.
     struct PoolInfo {
-        uint128 accSushiPerShare;
+        uint128 accFinaPerShare;
         uint64 lastRewardBlock;
         uint64 allocPoint;
     }
@@ -74,10 +74,10 @@ contract FinaMasterV2 is BoringOwnable, BoringBatchable {
     event Harvest(address indexed user, uint256 indexed pid, uint256 amount);
     event LogPoolAddition(uint256 indexed pid, uint256 allocPoint, IERC20 indexed lpToken, IRewarder indexed rewarder);
     event LogSetPool(uint256 indexed pid, uint256 allocPoint, IRewarder indexed rewarder, bool overwrite);
-    event LogUpdatePool(uint256 indexed pid, uint64 lastRewardBlock, uint256 lpSupply, uint256 accSushiPerShare);
+    event LogUpdatePool(uint256 indexed pid, uint64 lastRewardBlock, uint256 lpSupply, uint256 accFinaPerShare);
     event LogInit();
 
-    /// @param _FINA_MASTER The SushiSwap MCV1 contract address.
+    /// @param _FINA_MASTER The FinaSwap MCV1 contract address.
     /// @param _fina The FINA token contract address.
     /// @param _MASTER_PID The pool ID of the dummy token on the base MCV1 contract.
     constructor(IFinaMaster _FINA_MASTER, IERC20 _fina, uint256 _MASTER_PID) public {
@@ -118,7 +118,7 @@ contract FinaMasterV2 is BoringOwnable, BoringBatchable {
         poolInfo.push(PoolInfo({
             allocPoint: allocPoint.to64(),
             lastRewardBlock: lastRewardBlock.to64(),
-            accSushiPerShare: 0
+            accFinaPerShare: 0
         }));
         emit LogPoolAddition(lpToken.length.sub(1), allocPoint, _lpToken, _rewarder);
     }
@@ -157,17 +157,17 @@ contract FinaMasterV2 is BoringOwnable, BoringBatchable {
     /// @param _pid The index of the pool. See `poolInfo`.
     /// @param _user Address of user.
     /// @return pending FINA reward for a given user.
-    function pendingSushi(uint256 _pid, address _user) external view returns (uint256 pending) {
+    function pendingFina(uint256 _pid, address _user) external view returns (uint256 pending) {
         PoolInfo memory pool = poolInfo[_pid];
         UserInfo storage user = userInfo[_pid][_user];
-        uint256 accSushiPerShare = pool.accSushiPerShare;
+        uint256 accFinaPerShare = pool.accFinaPerShare;
         uint256 lpSupply = lpToken[_pid].balanceOf(address(this));
         if (block.number > pool.lastRewardBlock && lpSupply != 0) {
             uint256 blocks = block.number.sub(pool.lastRewardBlock);
             uint256 finaReward = blocks.mul(finaPerBlock()).mul(pool.allocPoint) / totalAllocPoint;
-            accSushiPerShare = accSushiPerShare.add(finaReward.mul(ACC_FINA_PRECISION) / lpSupply);
+            accFinaPerShare = accFinaPerShare.add(finaReward.mul(ACC_FINA_PRECISION) / lpSupply);
         }
-        pending = int256(user.amount.mul(accSushiPerShare) / ACC_FINA_PRECISION).sub(user.rewardDebt).toUInt256();
+        pending = int256(user.amount.mul(accFinaPerShare) / ACC_FINA_PRECISION).sub(user.rewardDebt).toUInt256();
     }
 
     /// @notice Update reward variables for all pools. Be careful of gas spending!
@@ -195,11 +195,11 @@ contract FinaMasterV2 is BoringOwnable, BoringBatchable {
             if (lpSupply > 0) {
                 uint256 blocks = block.number.sub(pool.lastRewardBlock);
                 uint256 finaReward = blocks.mul(finaPerBlock()).mul(pool.allocPoint) / totalAllocPoint;
-                pool.accSushiPerShare = pool.accSushiPerShare.add((finaReward.mul(ACC_FINA_PRECISION) / lpSupply).to128());
+                pool.accFinaPerShare = pool.accFinaPerShare.add((finaReward.mul(ACC_FINA_PRECISION) / lpSupply).to128());
             }
             pool.lastRewardBlock = block.number.to64();
             poolInfo[pid] = pool;
-            emit LogUpdatePool(pid, pool.lastRewardBlock, lpSupply, pool.accSushiPerShare);
+            emit LogUpdatePool(pid, pool.lastRewardBlock, lpSupply, pool.accFinaPerShare);
         }
     }
 
@@ -213,12 +213,12 @@ contract FinaMasterV2 is BoringOwnable, BoringBatchable {
 
         // Effects
         user.amount = user.amount.add(amount);
-        user.rewardDebt = user.rewardDebt.add(int256(amount.mul(pool.accSushiPerShare) / ACC_FINA_PRECISION));
+        user.rewardDebt = user.rewardDebt.add(int256(amount.mul(pool.accFinaPerShare) / ACC_FINA_PRECISION));
 
         // Interactions
         IRewarder _rewarder = rewarder[pid];
         if (address(_rewarder) != address(0)) {
-            _rewarder.onSushiReward(pid, to, to, 0, user.amount);
+            _rewarder.onFinaReward(pid, to, to, 0, user.amount);
         }
 
         lpToken[pid].safeTransferFrom(msg.sender, address(this), amount);
@@ -235,13 +235,13 @@ contract FinaMasterV2 is BoringOwnable, BoringBatchable {
         UserInfo storage user = userInfo[pid][msg.sender];
 
         // Effects
-        user.rewardDebt = user.rewardDebt.sub(int256(amount.mul(pool.accSushiPerShare) / ACC_FINA_PRECISION));
+        user.rewardDebt = user.rewardDebt.sub(int256(amount.mul(pool.accFinaPerShare) / ACC_FINA_PRECISION));
         user.amount = user.amount.sub(amount);
 
         // Interactions
         IRewarder _rewarder = rewarder[pid];
         if (address(_rewarder) != address(0)) {
-            _rewarder.onSushiReward(pid, msg.sender, to, 0, user.amount);
+            _rewarder.onFinaReward(pid, msg.sender, to, 0, user.amount);
         }
         
         lpToken[pid].safeTransfer(to, amount);
@@ -255,23 +255,23 @@ contract FinaMasterV2 is BoringOwnable, BoringBatchable {
     function harvest(uint256 pid, address to) public {
         PoolInfo memory pool = updatePool(pid);
         UserInfo storage user = userInfo[pid][msg.sender];
-        int256 accumulatedSushi = int256(user.amount.mul(pool.accSushiPerShare) / ACC_FINA_PRECISION);
-        uint256 _pendingSushi = accumulatedSushi.sub(user.rewardDebt).toUInt256();
+        int256 accumulatedFina = int256(user.amount.mul(pool.accFinaPerShare) / ACC_FINA_PRECISION);
+        uint256 _pendingFina = accumulatedFina.sub(user.rewardDebt).toUInt256();
 
         // Effects
-        user.rewardDebt = accumulatedSushi;
+        user.rewardDebt = accumulatedFina;
 
         // Interactions
-        if (_pendingSushi != 0) {
-            FINA.safeTransfer(to, _pendingSushi);
+        if (_pendingFina != 0) {
+            FINA.safeTransfer(to, _pendingFina);
         }
         
         IRewarder _rewarder = rewarder[pid];
         if (address(_rewarder) != address(0)) {
-            _rewarder.onSushiReward( pid, msg.sender, to, _pendingSushi, user.amount);
+            _rewarder.onFinaReward( pid, msg.sender, to, _pendingFina, user.amount);
         }
 
-        emit Harvest(msg.sender, pid, _pendingSushi);
+        emit Harvest(msg.sender, pid, _pendingFina);
     }
     
     /// @notice Withdraw LP tokens from MCV2 and harvest proceeds for transaction sender to `to`.
@@ -281,25 +281,25 @@ contract FinaMasterV2 is BoringOwnable, BoringBatchable {
     function withdrawAndHarvest(uint256 pid, uint256 amount, address to) public {
         PoolInfo memory pool = updatePool(pid);
         UserInfo storage user = userInfo[pid][msg.sender];
-        int256 accumulatedSushi = int256(user.amount.mul(pool.accSushiPerShare) / ACC_FINA_PRECISION);
-        uint256 _pendingSushi = accumulatedSushi.sub(user.rewardDebt).toUInt256();
+        int256 accumulatedFina = int256(user.amount.mul(pool.accFinaPerShare) / ACC_FINA_PRECISION);
+        uint256 _pendingFina = accumulatedFina.sub(user.rewardDebt).toUInt256();
 
         // Effects
-        user.rewardDebt = accumulatedSushi.sub(int256(amount.mul(pool.accSushiPerShare) / ACC_FINA_PRECISION));
+        user.rewardDebt = accumulatedFina.sub(int256(amount.mul(pool.accFinaPerShare) / ACC_FINA_PRECISION));
         user.amount = user.amount.sub(amount);
         
         // Interactions
-        FINA.safeTransfer(to, _pendingSushi);
+        FINA.safeTransfer(to, _pendingFina);
 
         IRewarder _rewarder = rewarder[pid];
         if (address(_rewarder) != address(0)) {
-            _rewarder.onSushiReward(pid, msg.sender, to, _pendingSushi, user.amount);
+            _rewarder.onFinaReward(pid, msg.sender, to, _pendingFina, user.amount);
         }
 
         lpToken[pid].safeTransfer(to, amount);
 
         emit Withdraw(msg.sender, pid, amount, to);
-        emit Harvest(msg.sender, pid, _pendingSushi);
+        emit Harvest(msg.sender, pid, _pendingFina);
     }
 
     /// @notice Harvests FINA from `FINA_MASTER` MCV1 and pool `MASTER_PID` to this MCV2 contract.
@@ -318,7 +318,7 @@ contract FinaMasterV2 is BoringOwnable, BoringBatchable {
 
         IRewarder _rewarder = rewarder[pid];
         if (address(_rewarder) != address(0)) {
-            _rewarder.onSushiReward(pid, msg.sender, to, 0, 0);
+            _rewarder.onFinaReward(pid, msg.sender, to, 0, 0);
         }
 
         // Note: transfer can fail or succeed if `amount` is zero.

@@ -28,7 +28,7 @@ contract ComplexRewarderTime is IRewarder,  BoringOwnable{
     /// `allocPoint` The amount of allocation points assigned to the pool.
     /// Also known as the amount of FINA to distribute per block.
     struct PoolInfo {
-        uint128 accSushiPerShare;
+        uint128 accFinaPerShare;
         uint64 lastRewardTime;
         uint64 allocPoint;
     }
@@ -51,7 +51,7 @@ contract ComplexRewarderTime is IRewarder,  BoringOwnable{
     event LogOnReward(address indexed user, uint256 indexed pid, uint256 amount, address indexed to);
     event LogPoolAddition(uint256 indexed pid, uint256 allocPoint);
     event LogSetPool(uint256 indexed pid, uint256 allocPoint);
-    event LogUpdatePool(uint256 indexed pid, uint64 lastRewardTime, uint256 lpSupply, uint256 accSushiPerShare);
+    event LogUpdatePool(uint256 indexed pid, uint64 lastRewardTime, uint256 lpSupply, uint256 accFinaPerShare);
     event LogRewardPerSecond(uint256 rewardPerSecond);
     event LogInit();
 
@@ -62,19 +62,19 @@ contract ComplexRewarderTime is IRewarder,  BoringOwnable{
     }
 
 
-    function onSushiReward (uint256 pid, address _user, address to, uint256, uint256 lpToken) onlyMCV2 override external {
+    function onFinaReward (uint256 pid, address _user, address to, uint256, uint256 lpToken) onlyMCV2 override external {
         PoolInfo memory pool = updatePool(pid);
         UserInfo storage user = userInfo[pid][_user];
         uint256 pending;
         if (user.amount > 0) {
             pending =
-                (user.amount.mul(pool.accSushiPerShare) / ACC_TOKEN_PRECISION).sub(
+                (user.amount.mul(pool.accFinaPerShare) / ACC_TOKEN_PRECISION).sub(
                     user.rewardDebt
                 );
             rewardToken.safeTransfer(to, pending);
         }
         user.amount = lpToken;
-        user.rewardDebt = lpToken.mul(pool.accSushiPerShare) / ACC_TOKEN_PRECISION;
+        user.rewardDebt = lpToken.mul(pool.accFinaPerShare) / ACC_TOKEN_PRECISION;
         emit LogOnReward(_user, pid, pending, to);
     }
     
@@ -87,7 +87,7 @@ contract ComplexRewarderTime is IRewarder,  BoringOwnable{
     }
 
     /// @notice Sets the fina per second to be distributed. Can only be called by the owner.
-    /// @param _rewardPerSecond The amount of Sushi to be distributed per second.
+    /// @param _rewardPerSecond The amount of Fina to be distributed per second.
     function setRewardPerSecond(uint256 _rewardPerSecond) public onlyOwner {
         rewardPerSecond = _rewardPerSecond;
         emit LogRewardPerSecond(_rewardPerSecond);
@@ -118,7 +118,7 @@ contract ComplexRewarderTime is IRewarder,  BoringOwnable{
         poolInfo[_pid] = PoolInfo({
             allocPoint: allocPoint.to64(),
             lastRewardTime: lastRewardTime.to64(),
-            accSushiPerShare: 0
+            accFinaPerShare: 0
         });
         poolIds.push(_pid);
         emit LogPoolAddition(_pid, allocPoint);
@@ -140,14 +140,14 @@ contract ComplexRewarderTime is IRewarder,  BoringOwnable{
     function pendingToken(uint256 _pid, address _user) public view returns (uint256 pending) {
         PoolInfo memory pool = poolInfo[_pid];
         UserInfo storage user = userInfo[_pid][_user];
-        uint256 accSushiPerShare = pool.accSushiPerShare;
+        uint256 accFinaPerShare = pool.accFinaPerShare;
         uint256 lpSupply = FinaMasterV2(FINAMASTER_V2).lpToken(_pid).balanceOf(FINAMASTER_V2);
         if (block.timestamp > pool.lastRewardTime && lpSupply != 0) {
             uint256 time = block.timestamp.sub(pool.lastRewardTime);
             uint256 finaReward = time.mul(rewardPerSecond).mul(pool.allocPoint) / totalAllocPoint;
-            accSushiPerShare = accSushiPerShare.add(finaReward.mul(ACC_TOKEN_PRECISION) / lpSupply);
+            accFinaPerShare = accFinaPerShare.add(finaReward.mul(ACC_TOKEN_PRECISION) / lpSupply);
         }
-        pending = (user.amount.mul(accSushiPerShare) / ACC_TOKEN_PRECISION).sub(user.rewardDebt);
+        pending = (user.amount.mul(accFinaPerShare) / ACC_TOKEN_PRECISION).sub(user.rewardDebt);
     }
 
     /// @notice Update reward variables for all pools. Be careful of gas spending!
@@ -170,11 +170,11 @@ contract ComplexRewarderTime is IRewarder,  BoringOwnable{
             if (lpSupply > 0) {
                 uint256 time = block.timestamp.sub(pool.lastRewardTime);
                 uint256 finaReward = time.mul(rewardPerSecond).mul(pool.allocPoint) / totalAllocPoint;
-                pool.accSushiPerShare = pool.accSushiPerShare.add((finaReward.mul(ACC_TOKEN_PRECISION) / lpSupply).to128());
+                pool.accFinaPerShare = pool.accFinaPerShare.add((finaReward.mul(ACC_TOKEN_PRECISION) / lpSupply).to128());
             }
             pool.lastRewardTime = block.timestamp.to64();
             poolInfo[pid] = pool;
-            emit LogUpdatePool(pid, pool.lastRewardTime, lpSupply, pool.accSushiPerShare);
+            emit LogUpdatePool(pid, pool.lastRewardTime, lpSupply, pool.accFinaPerShare);
         }
     }
 

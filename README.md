@@ -1,4 +1,4 @@
-# SushiSwap
+# FinaSwap
 
 https://fina.com/
 

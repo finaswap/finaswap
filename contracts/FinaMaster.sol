@@ -10,19 +10,19 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "./governance/FinaToken.sol";
 
 interface IMigratorChef {
-    // Perform LP token migration from legacy UniswapV2 to SushiSwap.
+    // Perform LP token migration from legacy UniswapV2 to FinaSwap.
     // Take the current LP token address and return the new LP token address.
     // Migrator should have full access to the caller's LP token.
     // Return the new LP token address.
     //
     // XXX Migrator must have allowance access to UniswapV2 LP tokens.
-    // SushiSwap must mint EXACTLY the same amount of SushiSwap LP tokens or
+    // FinaSwap must mint EXACTLY the same amount of FinaSwap LP tokens or
     // else something bad will happen. Traditional UniswapV2 does not
     // do that so be careful!
     function migrate(IERC20 token) external returns (IERC20);
 }
 
-// FinaMaster is the master of Sushi. He can make Sushi and he is a fair guy.
+// FinaMaster is the master of Fina. He can make Fina and he is a fair guy.
 //
 // Note that it's ownable and the owner wields tremendous power. The ownership
 // will be transferred to a governance smart contract once FINA is sufficiently
@@ -40,10 +40,10 @@ contract FinaMaster is Ownable {
         // We do some fancy math here. Basically, any point in time, the amount of FINAs
         // entitled to a user but is pending to be distributed is:
         //
-        //   pending reward = (user.amount * pool.accSushiPerShare) - user.rewardDebt
+        //   pending reward = (user.amount * pool.accFinaPerShare) - user.rewardDebt
         //
         // Whenever a user deposits or withdraws LP tokens to a pool. Here's what happens:
-        //   1. The pool's `accSushiPerShare` (and `lastRewardBlock`) gets updated.
+        //   1. The pool's `accFinaPerShare` (and `lastRewardBlock`) gets updated.
         //   2. User receives the pending reward sent to his/her address.
         //   3. User's `amount` gets updated.
         //   4. User's `rewardDebt` gets updated.
@@ -53,7 +53,7 @@ contract FinaMaster is Ownable {
         IERC20 lpToken; // Address of LP token contract.
         uint256 allocPoint; // How many allocation points assigned to this pool. FINAs to distribute per block.
         uint256 lastRewardBlock; // Last block number that FINAs distribution occurs.
-        uint256 accSushiPerShare; // Accumulated FINAs per share, times 1e12. See below.
+        uint256 accFinaPerShare; // Accumulated FINAs per share, times 1e12. See below.
     }
     // The FINA TOKEN!
     FinaToken public fina;
@@ -119,7 +119,7 @@ contract FinaMaster is Ownable {
                 lpToken: _lpToken,
                 allocPoint: _allocPoint,
                 lastRewardBlock: lastRewardBlock,
-                accSushiPerShare: 0
+                accFinaPerShare: 0
             })
         );
     }
@@ -175,14 +175,14 @@ contract FinaMaster is Ownable {
     }
 
     // View function to see pending FINAs on frontend.
-    function pendingSushi(uint256 _pid, address _user)
+    function pendingFina(uint256 _pid, address _user)
         external
         view
         returns (uint256)
     {
         PoolInfo storage pool = poolInfo[_pid];
         UserInfo storage user = userInfo[_pid][_user];
-        uint256 accSushiPerShare = pool.accSushiPerShare;
+        uint256 accFinaPerShare = pool.accFinaPerShare;
         uint256 lpSupply = pool.lpToken.balanceOf(address(this));
         if (block.number > pool.lastRewardBlock && lpSupply != 0) {
             uint256 multiplier =
@@ -191,11 +191,11 @@ contract FinaMaster is Ownable {
                 multiplier.mul(finaPerBlock).mul(pool.allocPoint).div(
                     totalAllocPoint
                 );
-            accSushiPerShare = accSushiPerShare.add(
+            accFinaPerShare = accFinaPerShare.add(
                 finaReward.mul(1e12).div(lpSupply)
             );
         }
-        return user.amount.mul(accSushiPerShare).div(1e12).sub(user.rewardDebt);
+        return user.amount.mul(accFinaPerShare).div(1e12).sub(user.rewardDebt);
     }
 
     // Update reward vairables for all pools. Be careful of gas spending!
@@ -224,7 +224,7 @@ contract FinaMaster is Ownable {
             );
         fina.mint(devaddr, finaReward.div(10));
         fina.mint(address(this), finaReward);
-        pool.accSushiPerShare = pool.accSushiPerShare.add(
+        pool.accFinaPerShare = pool.accFinaPerShare.add(
             finaReward.mul(1e12).div(lpSupply)
         );
         pool.lastRewardBlock = block.number;
@@ -237,10 +237,10 @@ contract FinaMaster is Ownable {
         updatePool(_pid);
         if (user.amount > 0) {
             uint256 pending =
-                user.amount.mul(pool.accSushiPerShare).div(1e12).sub(
+                user.amount.mul(pool.accFinaPerShare).div(1e12).sub(
                     user.rewardDebt
                 );
-            safeSushiTransfer(msg.sender, pending);
+            safeFinaTransfer(msg.sender, pending);
         }
         pool.lpToken.safeTransferFrom(
             address(msg.sender),
@@ -248,7 +248,7 @@ contract FinaMaster is Ownable {
             _amount
         );
         user.amount = user.amount.add(_amount);
-        user.rewardDebt = user.amount.mul(pool.accSushiPerShare).div(1e12);
+        user.rewardDebt = user.amount.mul(pool.accFinaPerShare).div(1e12);
         emit Deposit(msg.sender, _pid, _amount);
     }
 
@@ -259,12 +259,12 @@ contract FinaMaster is Ownable {
         require(user.amount >= _amount, "withdraw: not good");
         updatePool(_pid);
         uint256 pending =
-            user.amount.mul(pool.accSushiPerShare).div(1e12).sub(
+            user.amount.mul(pool.accFinaPerShare).div(1e12).sub(
                 user.rewardDebt
             );
-        safeSushiTransfer(msg.sender, pending);
+        safeFinaTransfer(msg.sender, pending);
         user.amount = user.amount.sub(_amount);
-        user.rewardDebt = user.amount.mul(pool.accSushiPerShare).div(1e12);
+        user.rewardDebt = user.amount.mul(pool.accFinaPerShare).div(1e12);
         pool.lpToken.safeTransfer(address(msg.sender), _amount);
         emit Withdraw(msg.sender, _pid, _amount);
     }
@@ -280,7 +280,7 @@ contract FinaMaster is Ownable {
     }
 
     // Safe fina transfer function, just in case if rounding error causes pool to not have enough FINAs.
-    function safeSushiTransfer(address _to, uint256 _amount) internal {
+    function safeFinaTransfer(address _to, uint256 _amount) internal {
         uint256 finaBal = fina.balanceOf(address(this));
         if (_amount > finaBal) {
             fina.transfer(_to, finaBal);

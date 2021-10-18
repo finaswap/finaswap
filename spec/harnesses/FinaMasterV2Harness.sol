@@ -25,8 +25,8 @@ contract FinaMasterV2Harness is FinaMasterV2 {
         return lpToken[pid].balanceOf(user);
     }
 
-    function poolInfoAccSushiPerShare(uint256 pid) public view returns (uint128) {
-        return poolInfo[pid].accSushiPerShare;
+    function poolInfoAccFinaPerShare(uint256 pid) public view returns (uint128) {
+        return poolInfo[pid].accFinaPerShare;
     }
 
     function poolInfoLastRewardBlock(uint256 pid) public view returns (uint64) {
@@ -43,9 +43,9 @@ contract FinaMasterV2Harness is FinaMasterV2 {
     function batch(bytes[] calldata calls, bool revertOnFail) override external
             payable returns(bool[] memory successes, bytes[] memory results) { }
 
-    mapping(uint256 => uint256) symbolicSushiPerBlock; // random number
+    mapping(uint256 => uint256) symbolicFinaPerBlock; // random number
     function finaPerBlock() public view override returns (uint256 amount) {
-        return symbolicSushiPerBlock[block.number];
+        return symbolicFinaPerBlock[block.number];
     }
 
     ////////////////////////////////////////////////////////////////////////////

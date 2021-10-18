@@ -2,7 +2,7 @@
 
 ## Overview
 
-This bug bounty document is to verify that SushiSwap hosts a bug bounty on Immunefi at the address [https://immunefi.com/bounty/finaswap](https://immunefi.com/bounty/finaswap).
+This bug bounty document is to verify that FinaSwap hosts a bug bounty on Immunefi at the address [https://immunefi.com/bounty/finaswap](https://immunefi.com/bounty/finaswap).
 
 If you have found a vulnerability in our project, it must be submitted through [Immunefi's platform](https://immunefi.com/). Immunefi will handle bug bounty communications.
 

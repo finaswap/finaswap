@@ -11,8 +11,8 @@ import "./uniswapv2/interfaces/IUniswapV2Factory.sol";
 
 import "./Ownable.sol";
 
-// FinaChief is FinaMaster's left hand and kinda a wizard. He can cook up Sushi from pretty much anything!
-// This contract handles "serving up" rewards for xSushi holders by trading tokens collected from fees for Sushi.
+// FinaChief is FinaMaster's left hand and kinda a wizard. He can cook up Fina from pretty much anything!
+// This contract handles "serving up" rewards for xFina holders by trading tokens collected from fees for Fina.
 
 // T1 - T4: OK
 contract FinaChief is Ownable {

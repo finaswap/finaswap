@@ -21,7 +21,7 @@ methods {
 	userInfoRewardDebt(uint256 pid, address user) returns (int256) envfree 
 	userLpTokenBalanceOf(uint256 pid, address user) returns (uint256) envfree // NOT USED
 
-	poolInfoAccSushiPerShare(uint256 pid) returns (uint128) envfree
+	poolInfoAccFinaPerShare(uint256 pid) returns (uint128) envfree
 	poolInfoLastRewardBlock(uint256 pid) returns (uint64) envfree
 	poolInfoAllocPoint(uint256 pid) returns (uint64) envfree
 	totalAllocPoint() returns (uint256) envfree
@@ -64,7 +64,7 @@ methods {
 	tokenB.balanceOf(address) returns (uint256) // NOT USED
 
 	// Rewarder
-	// SIG_ON_FINA_REWARD = 0xbb6cc2ef; // onSushiReward(uint256,address,uint256)
+	// SIG_ON_FINA_REWARD = 0xbb6cc2ef; // onFinaReward(uint256,address,uint256)
 	0xbb6cc2ef => NONDET
 
 	// FinaMasterV1

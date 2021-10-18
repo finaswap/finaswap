@@ -29,7 +29,7 @@ describe("FinaChief", function () {
     await createSLP(this, "daiMIC", this.dai, this.mic, getBigNumber(10))
   })
   describe("setBridge", function () {
-    it("does not allow to set bridge for Sushi", async function () {
+    it("does not allow to set bridge for Fina", async function () {
       await expect(this.finaChief.setBridge(this.fina.address, this.weth.address)).to.be.revertedWith("FinaChief: Invalid bridge")
     })
 

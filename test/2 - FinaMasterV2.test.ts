@@ -74,17 +74,17 @@ describe("FinaMasterV2", function () {
     })
   })
 
-  describe("PendingSushi", function() {
-    it("PendingSushi should equal ExpectedSushi", async function () {
+  describe("PendingFina", function() {
+    it("PendingFina should equal ExpectedFina", async function () {
       await this.chef2.add(10, this.rlp.address, this.rewarder.address)
       await this.rlp.approve(this.chef2.address, getBigNumber(10))
       let log = await this.chef2.deposit(0, getBigNumber(1), this.alice.address)
       await advanceBlock()
       let log2 = await this.chef2.updatePool(0)
       await advanceBlock()
-      let expectedSushi = getBigNumber(100).mul(log2.blockNumber + 1 - log.blockNumber).div(2)
-      let pendingSushi = await this.chef2.pendingSushi(0, this.alice.address)
-      expect(pendingSushi).to.be.equal(expectedSushi)
+      let expectedFina = getBigNumber(100).mul(log2.blockNumber + 1 - log.blockNumber).div(2)
+      let pendingFina = await this.chef2.pendingFina(0, this.alice.address)
+      expect(pendingFina).to.be.equal(expectedFina)
     })
     it("When block is lastRewardBlock", async function () {
       await this.chef2.add(10, this.rlp.address, this.rewarder.address)
@@ -92,9 +92,9 @@ describe("FinaMasterV2", function () {
       let log = await this.chef2.deposit(0, getBigNumber(1), this.alice.address)
       await advanceBlockTo(3)
       let log2 = await this.chef2.updatePool(0)
-      let expectedSushi = getBigNumber(100).mul(log2.blockNumber - log.blockNumber).div(2)
-      let pendingSushi = await this.chef2.pendingSushi(0, this.alice.address)
-      expect(pendingSushi).to.be.equal(expectedSushi)
+      let expectedFina = getBigNumber(100).mul(log2.blockNumber - log.blockNumber).div(2)
+      let pendingFina = await this.chef2.pendingFina(0, this.alice.address)
+      expect(pendingFina).to.be.equal(expectedFina)
     })
   })
 
@@ -136,7 +136,7 @@ describe("FinaMasterV2", function () {
             .to.emit(this.chef2, "LogUpdatePool")
             .withArgs(0, (await this.chef2.poolInfo(0)).lastRewardBlock,
               (await this.rlp.balanceOf(this.chef2.address)),
-              (await this.chef2.poolInfo(0)).accSushiPerShare)
+              (await this.chef2.poolInfo(0)).accFinaPerShare)
     })
 
     it("Should take else path", async function () {
@@ -192,10 +192,10 @@ describe("FinaMasterV2", function () {
         await advanceBlockTo(20)
         await this.chef2.harvestFromFinaMaster()
         let log2 = await this.chef2.withdraw(0, getBigNumber(1), this.alice.address)
-        let expectedSushi = getBigNumber(100).mul(log2.blockNumber - log.blockNumber).div(2)
-        expect((await this.chef2.userInfo(0, this.alice.address)).rewardDebt).to.be.equal("-"+expectedSushi)
+        let expectedFina = getBigNumber(100).mul(log2.blockNumber - log.blockNumber).div(2)
+        expect((await this.chef2.userInfo(0, this.alice.address)).rewardDebt).to.be.equal("-"+expectedFina)
         await this.chef2.harvest(0, this.alice.address)
-        expect(await this.fina.balanceOf(this.alice.address)).to.be.equal(await this.r.balanceOf(this.alice.address)).to.be.equal(expectedSushi)
+        expect(await this.fina.balanceOf(this.alice.address)).to.be.equal(await this.r.balanceOf(this.alice.address)).to.be.equal(expectedFina)
     })
     it("Harvest with empty user balance", async function () {
       await this.chef2.add(10, this.rlp.address, this.rewarder.address)
@@ -210,10 +210,10 @@ describe("FinaMasterV2", function () {
       await advanceBlock()
       await this.chef2.harvestFromFinaMaster()
       let log2 = await this.chef2.withdraw(0, getBigNumber(1), this.alice.address)
-      let expectedSushi = getBigNumber(100).mul(log2.blockNumber - log.blockNumber).div(2)
-      expect((await this.chef2.userInfo(0, this.alice.address)).rewardDebt).to.be.equal("-"+expectedSushi)
+      let expectedFina = getBigNumber(100).mul(log2.blockNumber - log.blockNumber).div(2)
+      expect((await this.chef2.userInfo(0, this.alice.address)).rewardDebt).to.be.equal("-"+expectedFina)
       await this.chef2.harvest(0, this.alice.address)
-      expect(await this.fina.balanceOf(this.alice.address)).to.be.equal(expectedSushi)
+      expect(await this.fina.balanceOf(this.alice.address)).to.be.equal(expectedFina)
     })
   })
 
