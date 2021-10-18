@@ -21,19 +21,19 @@ module.exports = async function ({ ethers: { getNamedSigner }, getNamedAccounts,
     throw Error("No WETH!")
   }
 
-  await deploy("SushiMaker", {
+  await deploy("FinaChief", {
     from: deployer,
     args: [factory.address, bar.address, sushi.address, wethAddress],
     log: true,
     deterministicDeployment: false
   })
 
-  const maker = await ethers.getContract("SushiMaker")
+  const maker = await ethers.getContract("FinaChief")
   if (await maker.owner() !== dev) {
     console.log("Setting maker owner")
     await (await maker.transferOwnership(dev, true, false)).wait()
   }
 }
 
-module.exports.tags = ["SushiMaker"]
+module.exports.tags = ["FinaChief"]
 module.exports.dependencies = ["UniswapV2Factory", "UniswapV2Router02", "SushiBar", "FinaToken"]

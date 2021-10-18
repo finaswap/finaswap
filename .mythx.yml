@@ -10,7 +10,7 @@ analyze:
     remappings:
         - "@openzeppelin=node_modules/@openzeppelin"
     targets:
-        - contracts/SushiMaker.sol:SushiMaker
+        - contracts/FinaChief.sol:FinaChief
         - contracts/uniswapv2/UniswapV2Pair.sol:UniswapV2Pair
         - contracts/uniswapv2/UniswapV2Factory.sol:UniswapV2Factory
         - contracts/uniswapv2/UniswapV2ERC20.sol:UniswapV2ERC20
