@@ -5,7 +5,7 @@ module.exports = async function ({ getNamedAccounts, deployments }) {
 
   const fina = await deployments.get("FinaToken")
 
-  await deploy("SushiBar", {
+  await deploy("FinaLounge", {
     from: deployer,
     args: [fina.address],
     log: true,
@@ -13,5 +13,5 @@ module.exports = async function ({ getNamedAccounts, deployments }) {
   })
 }
 
-module.exports.tags = ["SushiBar"]
+module.exports.tags = ["FinaLounge"]
 module.exports.dependencies = ["UniswapV2Factory", "UniswapV2Router02", "FinaToken"]

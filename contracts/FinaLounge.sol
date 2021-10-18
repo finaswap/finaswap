@@ -6,10 +6,10 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
 
-// SushiBar is the coolest bar in town. You come in with some Sushi, and leave with more! The longer you stay, the more Sushi you get.
+// FinaLounge is the coolest lounge in the office. You come in with some Sushi, and leave with more! The longer you stay, the more Sushi you get.
 //
 // This contract handles swapping to and from xSushi, SushiSwap's staking token.
-contract SushiBar is ERC20("SushiBar", "xFINA"){
+contract FinaLounge is ERC20("FinaLounge", "xFINA"){
     using SafeMath for uint256;
     IERC20 public fina;
 
@@ -18,7 +18,7 @@ contract SushiBar is ERC20("SushiBar", "xFINA"){
         fina = _fina;
     }
 
-    // Enter the bar. Pay some FINAs. Earn some shares.
+    // Enter the lounge. Pay some FINAs. Earn some shares.
     // Locks Sushi and mints xSushi
     function enter(uint256 _amount) public {
         // Gets the amount of Sushi locked in the contract
@@ -38,7 +38,7 @@ contract SushiBar is ERC20("SushiBar", "xFINA"){
         fina.transferFrom(msg.sender, address(this), _amount);
     }
 
-    // Leave the bar. Claim back your FINAs.
+    // Leave the lounge. Claim back your FINAs.
     // Unlocks the staked + gained Sushi and burns xSushi
     function leave(uint256 _share) public {
         // Gets the amount of xSushi in existence

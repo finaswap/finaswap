@@ -8,7 +8,7 @@ module.exports = async function ({ ethers: { getNamedSigner }, getNamedAccounts,
   const chainId = await getChainId()
 
   const factory = await ethers.getContract("UniswapV2Factory")
-  const bar = await ethers.getContract("SushiBar")
+  const lounge = await ethers.getContract("FinaLounge")
   const fina = await ethers.getContract("FinaToken")
   
   let wethAddress;
@@ -23,7 +23,7 @@ module.exports = async function ({ ethers: { getNamedSigner }, getNamedAccounts,
 
   await deploy("FinaChief", {
     from: deployer,
-    args: [factory.address, bar.address, fina.address, wethAddress],
+    args: [factory.address, lounge.address, fina.address, wethAddress],
     log: true,
     deterministicDeployment: false
   })
@@ -36,4 +36,4 @@ module.exports = async function ({ ethers: { getNamedSigner }, getNamedAccounts,
 }
 
 module.exports.tags = ["FinaChief"]
-module.exports.dependencies = ["UniswapV2Factory", "UniswapV2Router02", "SushiBar", "FinaToken"]
+module.exports.dependencies = ["UniswapV2Factory", "UniswapV2Router02", "FinaLounge", "FinaToken"]

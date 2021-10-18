@@ -18,6 +18,6 @@ analyze:
         - contracts/governance/FinaToken.sol:FinaToken
         - contracts/governance/GovernorAlpha.sol:GovernorAlpha
         - contracts/FinaMove.sol:FinaMove
-        - contracts/SushiBar.sol:SushiBar
+        - contracts/FinaLounge.sol:FinaLounge
         - contracts/FinaMaster.sol:FinaMaster
         - contracts/Migrator.sol:Migrator

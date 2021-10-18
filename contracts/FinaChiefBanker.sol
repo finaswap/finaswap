@@ -34,7 +34,7 @@ contract FinaChiefBanker is Ownable {
 
     IUniswapV2Factory private immutable factory;
     //0xC0AEe478e3658e2610c5F7A4A2E1777cE9e4f2Ac
-    address private immutable bar;
+    address private immutable lounge;
     //0x8798249c2E607446EfB7Ad49eC89dD1865Ff4272
     IBentoBoxWithdraw private immutable bentoBox;
     //0xF5BCE5077908a1b7370B9ae04AdC565EBd643966 
@@ -58,14 +58,14 @@ contract FinaChiefBanker is Ownable {
 
     constructor(
         IUniswapV2Factory _factory,
-        address _bar,
+        address _lounge,
         IBentoBoxWithdraw _bentoBox,
         address _fina,
         address _weth,
         bytes32 _pairCodeHash
     ) public {
         factory = _factory;
-        bar = _bar;
+        lounge = _lounge;
         bentoBox = _bentoBox;
         fina = _fina;
         weth = _weth;
@@ -121,10 +121,10 @@ contract FinaChiefBanker is Ownable {
 
     function _convertStep(address token0, uint256 amount0) private returns (uint256 finaOut) {
         if (token0 == fina) {
-            IERC20(token0).safeTransfer(bar, amount0);
+            IERC20(token0).safeTransfer(lounge, amount0);
             finaOut = amount0;
         } else if (token0 == weth) {
-            finaOut = _swap(token0, fina, amount0, bar);
+            finaOut = _swap(token0, fina, amount0, lounge);
         } else {
             address bridge = _bridges[token0];
             if (bridge == address(0)) {

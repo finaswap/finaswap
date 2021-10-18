@@ -229,31 +229,31 @@ task("masterchef:withdraw", "FinaMaster withdraw")
   await (await finaMaster.connect(await getNamedSigner("dev")).withdraw(pid, amount)).wait()
 });
 
-task("bar:enter", "SushiBar enter")
+task("lounge:enter", "FinaLounge enter")
 .addParam("amount", "Amount")
 .setAction(async function ({ amount }, { ethers: { getNamedSigner } }, runSuper) {
   const fina = await ethers.getContract("FinaToken")
 
-  const bar = await ethers.getContract("SushiBar")
+  const lounge = await ethers.getContract("FinaLounge")
 
-  await run("erc20:approve", { token: fina.address, spender: bar.address })
+  await run("erc20:approve", { token: fina.address, spender: lounge.address })
   
-  await (await bar.connect(await getNamedSigner("dev")).enter(amount)).wait()
+  await (await lounge.connect(await getNamedSigner("dev")).enter(amount)).wait()
 });
 
-task("bar:leave", "SushiBar leave")
+task("lounge:leave", "FinaLounge leave")
 .addParam("amount", "Amount")
 .setAction(async function ({ amount }, { ethers: { getNamedSigner } }, runSuper) {
   const fina = await ethers.getContract("FinaToken")
 
-  const bar = await ethers.getContract("SushiBar")
+  const lounge = await ethers.getContract("FinaLounge")
 
-  await run("erc20:approve", { token: fina.address, spender: bar.address })
+  await run("erc20:approve", { token: fina.address, spender: lounge.address })
   
-  await (await bar.connect(await getNamedSigner("dev")).leave(amount)).wait()
+  await (await lounge.connect(await getNamedSigner("dev")).leave(amount)).wait()
 });
 
-task("maker:serve", "SushiBar serve")
+task("maker:serve", "FinaLounge serve")
 .addParam("a", "Token A")
 .addParam("b", "Token B")
 .setAction(async function ({ a, b }, { ethers: { getNamedSigner } }, runSuper) {
