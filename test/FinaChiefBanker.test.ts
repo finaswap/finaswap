@@ -3,7 +3,7 @@ const { keccak256, defaultAbiCoder } = require("ethers");
 import { expect } from "chai";
 import { prepare, deploy, getBigNumber, createSLP } from "./utilities"
 
-describe("KashiFinaChief", function () {
+describe("FinaChiefBanker", function () {
   before(async function () {
     await prepare(this, ["FinaChiefBanker", "SushiBar", "FinaChiefBankerExploitMock", "ERC20Mock", "UniswapV2Factory", "UniswapV2Pair", "BentoBoxV1", "KashiPairMediumRiskV1", "PeggedOracleV1"])
   })
