@@ -3,9 +3,9 @@ import { advanceTime, advanceTimeAndBlock, advanceBlockTo, advanceBlock, prepare
 const { BigNumber } = require("ethers")
 import {ethers} from "hardhat"
 
-describe("MiniChefV2", function () {
+describe("FinaJuniorMasterV2", function () {
   before(async function () {
-    await prepare(this, ['MiniChefV2', 'FinaToken', 'ERC20Mock', 'RewarderMock', 'RewarderBrokenMock'])
+    await prepare(this, ['FinaJuniorMasterV2', 'FinaToken', 'ERC20Mock', 'RewarderMock', 'RewarderBrokenMock'])
     await deploy(this, [
       ["brokenRewarder", this.RewarderBrokenMock]
     ])
@@ -19,7 +19,7 @@ describe("MiniChefV2", function () {
     await deploy(this,
       [["lp", this.ERC20Mock, ["LP Token", "LPT", getBigNumber(10)]],
       ["dummy", this.ERC20Mock, ["Dummy", "DummyT", getBigNumber(10)]],
-      ['chef', this.MiniChefV2, [this.fina.address]],
+      ['chef', this.FinaJuniorMasterV2, [this.fina.address]],
       ["rlp", this.ERC20Mock, ["LP", "rLPT", getBigNumber(10)]],
       ["r", this.ERC20Mock, ["Reward", "RewardT", getBigNumber(100000)]],
     ])

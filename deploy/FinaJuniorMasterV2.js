@@ -22,19 +22,19 @@ module.exports = async function ({ ethers, deployments, getNamedAccounts }) {
     throw Error("No FINA!")
   }
 
-  await deploy("MiniChefV2", {
+  await deploy("FinaJuniorMasterV2", {
     from: deployer,
     args: [finaAddress],
     log: true,
     deterministicDeployment: false
   })
 
-  const miniChefV2 = await ethers.getContract("MiniChefV2")
-  if (await miniChefV2.owner() !== dev) {
-    console.log("Transfer ownership of MiniChef to dev")
-    await (await miniChefV2.transferOwnership(dev, true, false)).wait()
+  const finaJuniorMasterV2 = await ethers.getContract("FinaJuniorMasterV2")
+  if (await finaJuniorMasterV2.owner() !== dev) {
+    console.log("Transfer ownership of FinaJuniorMaster to dev")
+    await (await finaJuniorMasterV2.transferOwnership(dev, true, false)).wait()
   }
 }
 
-module.exports.tags = ["MiniChefV2"]
+module.exports.tags = ["FinaJuniorMasterV2"]
 // module.exports.dependencies = ["UniswapV2Factory", "UniswapV2Router02"]
