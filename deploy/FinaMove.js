@@ -22,7 +22,7 @@ module.exports = async function ({ getNamedAccounts, getChainId, deployments }) 
 
   const finaswapRouterAddress = (await deployments.get("UniswapV2Router02")).address
 
-  await deploy("SushiRoll", {
+  await deploy("FinaMove", {
     from: deployer,
     args: [uniswapRouterAddress, finaswapRouterAddress],
     log: true,
@@ -30,5 +30,5 @@ module.exports = async function ({ getNamedAccounts, getChainId, deployments }) 
   })
 }
 
-module.exports.tags = ["SushiRoll"]
+module.exports.tags = ["FinaMove"]
 module.exports.dependencies = ["UniswapV2Factory", "UniswapV2Router02"]
