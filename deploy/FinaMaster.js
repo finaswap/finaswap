@@ -18,11 +18,11 @@ module.exports = async function ({ ethers, deployments, getNamedAccounts }) {
     await (await sushi.transferOwnership(address)).wait()
   }
 
-  const masterChef = await ethers.getContract("FinaMaster")
-  if (await masterChef.owner() !== dev) {
+  const finaMaster = await ethers.getContract("FinaMaster")
+  if (await finaMaster.owner() !== dev) {
     // Transfer ownership of FinaMaster to dev
     console.log("Transfer ownership of FinaMaster to dev")
-    await (await masterChef.transferOwnership(dev)).wait()
+    await (await finaMaster.transferOwnership(dev)).wait()
   }
 }
 

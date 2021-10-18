@@ -7,8 +7,8 @@ contract FinaMasterV2Harness is FinaMasterV2 {
     ////////////////////////////////////////////////////////////////////////////
     //                         Constructors and inits                         //
     ////////////////////////////////////////////////////////////////////////////
-    constructor(IFinaMaster _MASTER_CHEF, IERC20 _sushi, uint256 _MASTER_PID)
-                    FinaMasterV2(_MASTER_CHEF, _sushi, _MASTER_PID) public { }
+    constructor(IFinaMaster _FINA_MASTER, IERC20 _sushi, uint256 _MASTER_PID)
+                    FinaMasterV2(_FINA_MASTER, _sushi, _MASTER_PID) public { }
 
     ////////////////////////////////////////////////////////////////////////////
     //                        Getters for The Internals                       //

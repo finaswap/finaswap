@@ -45,7 +45,7 @@ contract FinaMasterV2 is BoringOwnable, BoringBatchable {
     }
 
     /// @notice Address of MCV1 contract.
-    IFinaMaster public immutable MASTER_CHEF;
+    IFinaMaster public immutable FINA_MASTER;
     /// @notice Address of FINA contract.
     IERC20 public immutable FINA;
     /// @notice The index of MCV2 master pool in MCV1.
@@ -77,16 +77,16 @@ contract FinaMasterV2 is BoringOwnable, BoringBatchable {
     event LogUpdatePool(uint256 indexed pid, uint64 lastRewardBlock, uint256 lpSupply, uint256 accSushiPerShare);
     event LogInit();
 
-    /// @param _MASTER_CHEF The SushiSwap MCV1 contract address.
+    /// @param _FINA_MASTER The SushiSwap MCV1 contract address.
     /// @param _sushi The FINA token contract address.
     /// @param _MASTER_PID The pool ID of the dummy token on the base MCV1 contract.
-    constructor(IFinaMaster _MASTER_CHEF, IERC20 _sushi, uint256 _MASTER_PID) public {
-        MASTER_CHEF = _MASTER_CHEF;
+    constructor(IFinaMaster _FINA_MASTER, IERC20 _sushi, uint256 _MASTER_PID) public {
+        FINA_MASTER = _FINA_MASTER;
         FINA = _sushi;
         MASTER_PID = _MASTER_PID;
     }
 
-    /// @notice Deposits a dummy token to `MASTER_CHEF` MCV1. This is required because MCV1 holds the minting rights for FINA.
+    /// @notice Deposits a dummy token to `FINA_MASTER` MCV1. This is required because MCV1 holds the minting rights for FINA.
     /// Any balance of transaction sender in `dummyToken` is transferred.
     /// The allocation point for the pool on MCV1 is the total allocation point for all pools that receive double incentives.
     /// @param dummyToken The address of the ERC-20 token to deposit into MCV1.
@@ -94,8 +94,8 @@ contract FinaMasterV2 is BoringOwnable, BoringBatchable {
         uint256 balance = dummyToken.balanceOf(msg.sender);
         require(balance != 0, "FinaMasterV2: Balance must exceed 0");
         dummyToken.safeTransferFrom(msg.sender, address(this), balance);
-        dummyToken.approve(address(MASTER_CHEF), balance);
-        MASTER_CHEF.deposit(MASTER_PID, balance);
+        dummyToken.approve(address(FINA_MASTER), balance);
+        FINA_MASTER.deposit(MASTER_PID, balance);
         emit LogInit();
     }
 
@@ -182,7 +182,7 @@ contract FinaMasterV2 is BoringOwnable, BoringBatchable {
     /// @notice Calculates and returns the `amount` of FINA per block.
     function sushiPerBlock() public view returns (uint256 amount) {
         amount = uint256(FINAMASTER_FINA_PER_BLOCK)
-            .mul(MASTER_CHEF.poolInfo(MASTER_PID).allocPoint) / MASTER_CHEF.totalAllocPoint();
+            .mul(FINA_MASTER.poolInfo(MASTER_PID).allocPoint) / FINA_MASTER.totalAllocPoint();
     }
 
     /// @notice Update reward variables of the given pool.
@@ -302,9 +302,9 @@ contract FinaMasterV2 is BoringOwnable, BoringBatchable {
         emit Harvest(msg.sender, pid, _pendingSushi);
     }
 
-    /// @notice Harvests FINA from `MASTER_CHEF` MCV1 and pool `MASTER_PID` to this MCV2 contract.
+    /// @notice Harvests FINA from `FINA_MASTER` MCV1 and pool `MASTER_PID` to this MCV2 contract.
     function harvestFromFinaMaster() public {
-        MASTER_CHEF.deposit(MASTER_PID, 0);
+        FINA_MASTER.deposit(MASTER_PID, 0);
     }
 
     /// @notice Withdraw without caring about rewards. EMERGENCY ONLY.

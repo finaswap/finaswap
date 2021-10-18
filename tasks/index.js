@@ -198,35 +198,35 @@ task("migrate", "Migrates liquidity from Uniswap to SushiSwap")
 
 task("masterchef:add", "Add pool to masterchef")
 .setAction(async function (taskArguments, { ethers: { getNamedSigner } }, runSuper) {
-  const masterChef = await ethers.getContract("FinaMaster")
+  const finaMaster = await ethers.getContract("FinaMaster")
 
-  await (await masterChef.connect(await getNamedSigner("dev")).add(1000, '0x3e78a806b127c02b54419191571d9379819e989c', true)).wait()
+  await (await finaMaster.connect(await getNamedSigner("dev")).add(1000, '0x3e78a806b127c02b54419191571d9379819e989c', true)).wait()
 });
 
 task("masterchef:deposit", "FinaMaster deposit")
 .addParam("pid", "Pool ID")
 .addParam("amount", "Amount")
 .setAction(async function ({ pid, amount }, { ethers: { getNamedSigner } }, runSuper) {
-  const masterChef = await ethers.getContract("FinaMaster")
+  const finaMaster = await ethers.getContract("FinaMaster")
 
-  const { lpToken } = await masterChef.poolInfo(pid)
+  const { lpToken } = await finaMaster.poolInfo(pid)
 
-  await run("erc20:approve", { token: lpToken, spender: masterChef.address })
+  await run("erc20:approve", { token: lpToken, spender: finaMaster.address })
 
-  await (await masterChef.connect(await getNamedSigner("dev")).deposit(pid, amount)).wait()
+  await (await finaMaster.connect(await getNamedSigner("dev")).deposit(pid, amount)).wait()
 });
 
 task("masterchef:withdraw", "FinaMaster withdraw")
 .addParam("pid", "Pool ID")
 .addParam("amount", "Amount")
 .setAction(async function ({ pid, amount }, { ethers: { getNamedSigner } }, runSuper) {
-  const masterChef = await ethers.getContract("FinaMaster")
+  const finaMaster = await ethers.getContract("FinaMaster")
 
-  const { lpToken } = await masterChef.poolInfo(pid)
+  const { lpToken } = await finaMaster.poolInfo(pid)
 
-  await run("erc20:approve", { token: lpToken, spender: masterChef.address })
+  await run("erc20:approve", { token: lpToken, spender: finaMaster.address })
 
-  await (await masterChef.connect(await getNamedSigner("dev")).withdraw(pid, amount)).wait()
+  await (await finaMaster.connect(await getNamedSigner("dev")).withdraw(pid, amount)).wait()
 });
 
 task("bar:enter", "SushiBar enter")
