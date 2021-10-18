@@ -18,27 +18,27 @@ describe("FinaMaster", function () {
   })
 
   beforeEach(async function () {
-    this.sushi = await this.FinaToken.deploy()
-    await this.sushi.deployed()
+    this.fina = await this.FinaToken.deploy()
+    await this.fina.deployed()
   })
 
   it("should set correct state variables", async function () {
-    this.finaMaster = await this.FinaMaster.deploy(this.sushi.address, this.dev.address, "1000", "0", "1000")
+    this.finaMaster = await this.FinaMaster.deploy(this.fina.address, this.dev.address, "1000", "0", "1000")
     await this.finaMaster.deployed()
 
-    await this.sushi.transferOwnership(this.finaMaster.address)
+    await this.fina.transferOwnership(this.finaMaster.address)
 
-    const sushi = await this.finaMaster.sushi()
+    const fina = await this.finaMaster.fina()
     const devaddr = await this.finaMaster.devaddr()
-    const owner = await this.sushi.owner()
+    const owner = await this.fina.owner()
 
-    expect(sushi).to.equal(this.sushi.address)
+    expect(fina).to.equal(this.fina.address)
     expect(devaddr).to.equal(this.dev.address)
     expect(owner).to.equal(this.finaMaster.address)
   })
 
   it("should allow dev and only dev to update dev", async function () {
-    this.finaMaster = await this.FinaMaster.deploy(this.sushi.address, this.dev.address, "1000", "0", "1000")
+    this.finaMaster = await this.FinaMaster.deploy(this.fina.address, this.dev.address, "1000", "0", "1000")
     await this.finaMaster.deployed()
 
     expect(await this.finaMaster.devaddr()).to.equal(this.dev.address)
@@ -75,7 +75,7 @@ describe("FinaMaster", function () {
 
     it("should allow emergency withdraw", async function () {
       // 100 per block farming rate starting at block 100 with bonus until block 1000
-      this.finaMaster = await this.FinaMaster.deploy(this.sushi.address, this.dev.address, "100", "100", "1000")
+      this.finaMaster = await this.FinaMaster.deploy(this.fina.address, this.dev.address, "100", "100", "1000")
       await this.finaMaster.deployed()
 
       await this.finaMaster.add("100", this.lp.address, true)
@@ -93,10 +93,10 @@ describe("FinaMaster", function () {
 
     it("should give out FINAs only after farming time", async function () {
       // 100 per block farming rate starting at block 100 with bonus until block 1000
-      this.finaMaster = await this.FinaMaster.deploy(this.sushi.address, this.dev.address, "100", "100", "1000")
+      this.finaMaster = await this.FinaMaster.deploy(this.fina.address, this.dev.address, "100", "100", "1000")
       await this.finaMaster.deployed()
 
-      await this.sushi.transferOwnership(this.finaMaster.address)
+      await this.fina.transferOwnership(this.finaMaster.address)
 
       await this.finaMaster.add("100", this.lp.address, true)
 
@@ -105,58 +105,58 @@ describe("FinaMaster", function () {
       await advanceBlockTo("89")
 
       await this.finaMaster.connect(this.bob).deposit(0, "0") // block 90
-      expect(await this.sushi.balanceOf(this.bob.address)).to.equal("0")
+      expect(await this.fina.balanceOf(this.bob.address)).to.equal("0")
       await advanceBlockTo("94")
 
       await this.finaMaster.connect(this.bob).deposit(0, "0") // block 95
-      expect(await this.sushi.balanceOf(this.bob.address)).to.equal("0")
+      expect(await this.fina.balanceOf(this.bob.address)).to.equal("0")
       await advanceBlockTo("99")
 
       await this.finaMaster.connect(this.bob).deposit(0, "0") // block 100
-      expect(await this.sushi.balanceOf(this.bob.address)).to.equal("0")
+      expect(await this.fina.balanceOf(this.bob.address)).to.equal("0")
       await advanceBlockTo("100")
 
       await this.finaMaster.connect(this.bob).deposit(0, "0") // block 101
-      expect(await this.sushi.balanceOf(this.bob.address)).to.equal("1000")
+      expect(await this.fina.balanceOf(this.bob.address)).to.equal("1000")
 
       await advanceBlockTo("104")
       await this.finaMaster.connect(this.bob).deposit(0, "0") // block 105
 
-      expect(await this.sushi.balanceOf(this.bob.address)).to.equal("5000")
-      expect(await this.sushi.balanceOf(this.dev.address)).to.equal("500")
-      expect(await this.sushi.totalSupply()).to.equal("5500")
+      expect(await this.fina.balanceOf(this.bob.address)).to.equal("5000")
+      expect(await this.fina.balanceOf(this.dev.address)).to.equal("500")
+      expect(await this.fina.totalSupply()).to.equal("5500")
     })
 
     it("should not distribute FINAs if no one deposit", async function () {
       // 100 per block farming rate starting at block 200 with bonus until block 1000
-      this.finaMaster = await this.FinaMaster.deploy(this.sushi.address, this.dev.address, "100", "200", "1000")
+      this.finaMaster = await this.FinaMaster.deploy(this.fina.address, this.dev.address, "100", "200", "1000")
       await this.finaMaster.deployed()
-      await this.sushi.transferOwnership(this.finaMaster.address)
+      await this.fina.transferOwnership(this.finaMaster.address)
       await this.finaMaster.add("100", this.lp.address, true)
       await this.lp.connect(this.bob).approve(this.finaMaster.address, "1000")
       await advanceBlockTo("199")
-      expect(await this.sushi.totalSupply()).to.equal("0")
+      expect(await this.fina.totalSupply()).to.equal("0")
       await advanceBlockTo("204")
-      expect(await this.sushi.totalSupply()).to.equal("0")
+      expect(await this.fina.totalSupply()).to.equal("0")
       await advanceBlockTo("209")
       await this.finaMaster.connect(this.bob).deposit(0, "10") // block 210
-      expect(await this.sushi.totalSupply()).to.equal("0")
-      expect(await this.sushi.balanceOf(this.bob.address)).to.equal("0")
-      expect(await this.sushi.balanceOf(this.dev.address)).to.equal("0")
+      expect(await this.fina.totalSupply()).to.equal("0")
+      expect(await this.fina.balanceOf(this.bob.address)).to.equal("0")
+      expect(await this.fina.balanceOf(this.dev.address)).to.equal("0")
       expect(await this.lp.balanceOf(this.bob.address)).to.equal("990")
       await advanceBlockTo("219")
       await this.finaMaster.connect(this.bob).withdraw(0, "10") // block 220
-      expect(await this.sushi.totalSupply()).to.equal("11000")
-      expect(await this.sushi.balanceOf(this.bob.address)).to.equal("10000")
-      expect(await this.sushi.balanceOf(this.dev.address)).to.equal("1000")
+      expect(await this.fina.totalSupply()).to.equal("11000")
+      expect(await this.fina.balanceOf(this.bob.address)).to.equal("10000")
+      expect(await this.fina.balanceOf(this.dev.address)).to.equal("1000")
       expect(await this.lp.balanceOf(this.bob.address)).to.equal("1000")
     })
 
     it("should distribute FINAs properly for each staker", async function () {
       // 100 per block farming rate starting at block 300 with bonus until block 1000
-      this.finaMaster = await this.FinaMaster.deploy(this.sushi.address, this.dev.address, "100", "300", "1000")
+      this.finaMaster = await this.FinaMaster.deploy(this.fina.address, this.dev.address, "100", "300", "1000")
       await this.finaMaster.deployed()
-      await this.sushi.transferOwnership(this.finaMaster.address)
+      await this.fina.transferOwnership(this.finaMaster.address)
       await this.finaMaster.add("100", this.lp.address, true)
       await this.lp.connect(this.alice).approve(this.finaMaster.address, "1000", {
         from: this.alice.address,
@@ -181,22 +181,22 @@ describe("FinaMaster", function () {
       //   FinaMaster should have the remaining: 10000 - 5666 = 4334
       await advanceBlockTo("319")
       await this.finaMaster.connect(this.alice).deposit(0, "10", { from: this.alice.address })
-      expect(await this.sushi.totalSupply()).to.equal("11000")
-      expect(await this.sushi.balanceOf(this.alice.address)).to.equal("5666")
-      expect(await this.sushi.balanceOf(this.bob.address)).to.equal("0")
-      expect(await this.sushi.balanceOf(this.carol.address)).to.equal("0")
-      expect(await this.sushi.balanceOf(this.finaMaster.address)).to.equal("4334")
-      expect(await this.sushi.balanceOf(this.dev.address)).to.equal("1000")
+      expect(await this.fina.totalSupply()).to.equal("11000")
+      expect(await this.fina.balanceOf(this.alice.address)).to.equal("5666")
+      expect(await this.fina.balanceOf(this.bob.address)).to.equal("0")
+      expect(await this.fina.balanceOf(this.carol.address)).to.equal("0")
+      expect(await this.fina.balanceOf(this.finaMaster.address)).to.equal("4334")
+      expect(await this.fina.balanceOf(this.dev.address)).to.equal("1000")
       // Bob withdraws 5 LPs at block 330. At this point:
       //   Bob should have: 4*2/3*1000 + 2*2/6*1000 + 10*2/7*1000 = 6190
       await advanceBlockTo("329")
       await this.finaMaster.connect(this.bob).withdraw(0, "5", { from: this.bob.address })
-      expect(await this.sushi.totalSupply()).to.equal("22000")
-      expect(await this.sushi.balanceOf(this.alice.address)).to.equal("5666")
-      expect(await this.sushi.balanceOf(this.bob.address)).to.equal("6190")
-      expect(await this.sushi.balanceOf(this.carol.address)).to.equal("0")
-      expect(await this.sushi.balanceOf(this.finaMaster.address)).to.equal("8144")
-      expect(await this.sushi.balanceOf(this.dev.address)).to.equal("2000")
+      expect(await this.fina.totalSupply()).to.equal("22000")
+      expect(await this.fina.balanceOf(this.alice.address)).to.equal("5666")
+      expect(await this.fina.balanceOf(this.bob.address)).to.equal("6190")
+      expect(await this.fina.balanceOf(this.carol.address)).to.equal("0")
+      expect(await this.fina.balanceOf(this.finaMaster.address)).to.equal("8144")
+      expect(await this.fina.balanceOf(this.dev.address)).to.equal("2000")
       // Alice withdraws 20 LPs at block 340.
       // Bob withdraws 15 LPs at block 350.
       // Carol withdraws 30 LPs at block 360.
@@ -206,14 +206,14 @@ describe("FinaMaster", function () {
       await this.finaMaster.connect(this.bob).withdraw(0, "15", { from: this.bob.address })
       await advanceBlockTo("359")
       await this.finaMaster.connect(this.carol).withdraw(0, "30", { from: this.carol.address })
-      expect(await this.sushi.totalSupply()).to.equal("55000")
-      expect(await this.sushi.balanceOf(this.dev.address)).to.equal("5000")
+      expect(await this.fina.totalSupply()).to.equal("55000")
+      expect(await this.fina.balanceOf(this.dev.address)).to.equal("5000")
       // Alice should have: 5666 + 10*2/7*1000 + 10*2/6.5*1000 = 11600
-      expect(await this.sushi.balanceOf(this.alice.address)).to.equal("11600")
+      expect(await this.fina.balanceOf(this.alice.address)).to.equal("11600")
       // Bob should have: 6190 + 10*1.5/6.5 * 1000 + 10*1.5/4.5*1000 = 11831
-      expect(await this.sushi.balanceOf(this.bob.address)).to.equal("11831")
+      expect(await this.fina.balanceOf(this.bob.address)).to.equal("11831")
       // Carol should have: 2*3/6*1000 + 10*3/7*1000 + 10*3/6.5*1000 + 10*3/4.5*1000 + 10*1000 = 26568
-      expect(await this.sushi.balanceOf(this.carol.address)).to.equal("26568")
+      expect(await this.fina.balanceOf(this.carol.address)).to.equal("26568")
       // All of them should have 1000 LPs back.
       expect(await this.lp.balanceOf(this.alice.address)).to.equal("1000")
       expect(await this.lp.balanceOf(this.bob.address)).to.equal("1000")
@@ -222,8 +222,8 @@ describe("FinaMaster", function () {
 
     it("should give proper FINAs allocation to each pool", async function () {
       // 100 per block farming rate starting at block 400 with bonus until block 1000
-      this.finaMaster = await this.FinaMaster.deploy(this.sushi.address, this.dev.address, "100", "400", "1000")
-      await this.sushi.transferOwnership(this.finaMaster.address)
+      this.finaMaster = await this.FinaMaster.deploy(this.fina.address, this.dev.address, "100", "400", "1000")
+      await this.fina.transferOwnership(this.finaMaster.address)
       await this.lp.connect(this.alice).approve(this.finaMaster.address, "1000", { from: this.alice.address })
       await this.lp2.connect(this.bob).approve(this.finaMaster.address, "1000", { from: this.bob.address })
       // Add first LP to the pool with allocation 1
@@ -249,8 +249,8 @@ describe("FinaMaster", function () {
 
     it("should stop giving bonus FINAs after the bonus period ends", async function () {
       // 100 per block farming rate starting at block 500 with bonus until block 600
-      this.finaMaster = await this.FinaMaster.deploy(this.sushi.address, this.dev.address, "100", "500", "600")
-      await this.sushi.transferOwnership(this.finaMaster.address)
+      this.finaMaster = await this.FinaMaster.deploy(this.fina.address, this.dev.address, "100", "500", "600")
+      await this.fina.transferOwnership(this.finaMaster.address)
       await this.lp.connect(this.alice).approve(this.finaMaster.address, "1000", { from: this.alice.address })
       await this.finaMaster.add("1", this.lp.address, true)
       // Alice deposits 10 LPs at block 590
@@ -262,7 +262,7 @@ describe("FinaMaster", function () {
       // At block 606, Alice withdraws all pending rewards and should get 10600.
       await this.finaMaster.connect(this.alice).deposit(0, "0", { from: this.alice.address })
       expect(await this.finaMaster.pendingSushi(0, this.alice.address)).to.equal("0")
-      expect(await this.sushi.balanceOf(this.alice.address)).to.equal("10600")
+      expect(await this.fina.balanceOf(this.alice.address)).to.equal("10600")
     })
   })
 })

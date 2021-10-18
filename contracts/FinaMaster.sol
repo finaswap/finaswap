@@ -56,14 +56,14 @@ contract FinaMaster is Ownable {
         uint256 accSushiPerShare; // Accumulated FINAs per share, times 1e12. See below.
     }
     // The FINA TOKEN!
-    FinaToken public sushi;
+    FinaToken public fina;
     // Dev address.
     address public devaddr;
     // Block number when bonus FINA period ends.
     uint256 public bonusEndBlock;
     // FINA tokens created per block.
-    uint256 public sushiPerBlock;
-    // Bonus muliplier for early sushi makers.
+    uint256 public finaPerBlock;
+    // Bonus muliplier for early fina makers.
     uint256 public constant BONUS_MULTIPLIER = 10;
     // The migrator contract. It has a lot of power. Can only be set through governance (owner).
     IMigratorChef public migrator;
@@ -84,15 +84,15 @@ contract FinaMaster is Ownable {
     );
 
     constructor(
-        FinaToken _sushi,
+        FinaToken _fina,
         address _devaddr,
-        uint256 _sushiPerBlock,
+        uint256 _finaPerBlock,
         uint256 _startBlock,
         uint256 _bonusEndBlock
     ) public {
-        sushi = _sushi;
+        fina = _fina;
         devaddr = _devaddr;
-        sushiPerBlock = _sushiPerBlock;
+        finaPerBlock = _finaPerBlock;
         bonusEndBlock = _bonusEndBlock;
         startBlock = _startBlock;
     }
@@ -187,12 +187,12 @@ contract FinaMaster is Ownable {
         if (block.number > pool.lastRewardBlock && lpSupply != 0) {
             uint256 multiplier =
                 getMultiplier(pool.lastRewardBlock, block.number);
-            uint256 sushiReward =
-                multiplier.mul(sushiPerBlock).mul(pool.allocPoint).div(
+            uint256 finaReward =
+                multiplier.mul(finaPerBlock).mul(pool.allocPoint).div(
                     totalAllocPoint
                 );
             accSushiPerShare = accSushiPerShare.add(
-                sushiReward.mul(1e12).div(lpSupply)
+                finaReward.mul(1e12).div(lpSupply)
             );
         }
         return user.amount.mul(accSushiPerShare).div(1e12).sub(user.rewardDebt);
@@ -218,14 +218,14 @@ contract FinaMaster is Ownable {
             return;
         }
         uint256 multiplier = getMultiplier(pool.lastRewardBlock, block.number);
-        uint256 sushiReward =
-            multiplier.mul(sushiPerBlock).mul(pool.allocPoint).div(
+        uint256 finaReward =
+            multiplier.mul(finaPerBlock).mul(pool.allocPoint).div(
                 totalAllocPoint
             );
-        sushi.mint(devaddr, sushiReward.div(10));
-        sushi.mint(address(this), sushiReward);
+        fina.mint(devaddr, finaReward.div(10));
+        fina.mint(address(this), finaReward);
         pool.accSushiPerShare = pool.accSushiPerShare.add(
-            sushiReward.mul(1e12).div(lpSupply)
+            finaReward.mul(1e12).div(lpSupply)
         );
         pool.lastRewardBlock = block.number;
     }
@@ -279,13 +279,13 @@ contract FinaMaster is Ownable {
         user.rewardDebt = 0;
     }
 
-    // Safe sushi transfer function, just in case if rounding error causes pool to not have enough FINAs.
+    // Safe fina transfer function, just in case if rounding error causes pool to not have enough FINAs.
     function safeSushiTransfer(address _to, uint256 _amount) internal {
-        uint256 sushiBal = sushi.balanceOf(address(this));
-        if (_amount > sushiBal) {
-            sushi.transfer(_to, sushiBal);
+        uint256 finaBal = fina.balanceOf(address(this));
+        if (_amount > finaBal) {
+            fina.transfer(_to, finaBal);
         } else {
-            sushi.transfer(_to, _amount);
+            fina.transfer(_to, _amount);
         }
     }
 
