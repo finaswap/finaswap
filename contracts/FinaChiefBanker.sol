@@ -9,7 +9,7 @@ import "./uniswapv2/interfaces/IUniswapV2Factory.sol";
 
 import "./Ownable.sol";
 
-interface IBentoBoxWithdraw {
+interface IFinaVaultWithdraw {
     function withdraw(
         IERC20 token_,
         address from,
@@ -36,7 +36,7 @@ contract FinaChiefBanker is Ownable {
     //0xC0AEe478e3658e2610c5F7A4A2E1777cE9e4f2Ac
     address private immutable lounge;
     //0x8798249c2E607446EfB7Ad49eC89dD1865Ff4272
-    IBentoBoxWithdraw private immutable bentoBox;
+    IFinaVaultWithdraw private immutable finaVault;
     //0xF5BCE5077908a1b7370B9ae04AdC565EBd643966 
     address private immutable fina;
     //0x6B3595068778DD592e39A122f4f5a5cF09C90fE2
@@ -52,21 +52,21 @@ contract FinaChiefBanker is Ownable {
         address indexed server,
         address indexed token0,
         uint256 amount0,
-        uint256 amountBENTO,
+        uint256 amountVAULT,
         uint256 amountFINA
     );
 
     constructor(
         IUniswapV2Factory _factory,
         address _lounge,
-        IBentoBoxWithdraw _bentoBox,
+        IFinaVaultWithdraw _finaVault,
         address _fina,
         address _weth,
         bytes32 _pairCodeHash
     ) public {
         factory = _factory;
         lounge = _lounge;
-        bentoBox = _bentoBox;
+        finaVault = _finaVault;
         fina = _fina;
         weth = _weth;
         pairCodeHash = _pairCodeHash;
@@ -103,18 +103,18 @@ contract FinaChiefBanker is Ownable {
         // update Kashi fees for this Maker contract (`feeTo`)
         kashiPair.withdrawFees();
 
-        // convert updated Kashi balance to Bento shares
-        uint256 bentoShares = kashiPair.removeAsset(address(this), kashiPair.balanceOf(address(this)));
+        // convert updated Kashi balance to Vault shares
+        uint256 vaultShares = kashiPair.removeAsset(address(this), kashiPair.balanceOf(address(this)));
 
-        // convert Bento shares to underlying Kashi asset (`token0`) balance (`amount0`) for Maker
+        // convert Vault shares to underlying Kashi asset (`token0`) balance (`amount0`) for Maker
         address token0 = kashiPair.asset();
-        (uint256 amount0, ) = bentoBox.withdraw(IERC20(token0), address(this), address(this), 0, bentoShares);
+        (uint256 amount0, ) = finaVault.withdraw(IERC20(token0), address(this), address(this), 0, vaultShares);
 
         emit LogConvert(
             msg.sender,
             token0,
             amount0,
-            bentoShares,
+            vaultShares,
             _convertStep(token0, amount0)
         );
     }
