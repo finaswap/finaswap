@@ -1,5 +1,5 @@
 #  workflow pipeline
-name: sushiswap
+name: finaswap
 
 on: ["push", "pull_request"]
 
