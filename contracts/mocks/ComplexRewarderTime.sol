@@ -86,7 +86,7 @@ contract ComplexRewarderTime is IRewarder,  BoringOwnable{
         return (_rewardTokens, _rewardAmounts);
     }
 
-    /// @notice Sets the sushi per second to be distributed. Can only be called by the owner.
+    /// @notice Sets the fina per second to be distributed. Can only be called by the owner.
     /// @param _rewardPerSecond The amount of Sushi to be distributed per second.
     function setRewardPerSecond(uint256 _rewardPerSecond) public onlyOwner {
         rewardPerSecond = _rewardPerSecond;
@@ -144,8 +144,8 @@ contract ComplexRewarderTime is IRewarder,  BoringOwnable{
         uint256 lpSupply = FinaMasterV2(FINAMASTER_V2).lpToken(_pid).balanceOf(FINAMASTER_V2);
         if (block.timestamp > pool.lastRewardTime && lpSupply != 0) {
             uint256 time = block.timestamp.sub(pool.lastRewardTime);
-            uint256 sushiReward = time.mul(rewardPerSecond).mul(pool.allocPoint) / totalAllocPoint;
-            accSushiPerShare = accSushiPerShare.add(sushiReward.mul(ACC_TOKEN_PRECISION) / lpSupply);
+            uint256 finaReward = time.mul(rewardPerSecond).mul(pool.allocPoint) / totalAllocPoint;
+            accSushiPerShare = accSushiPerShare.add(finaReward.mul(ACC_TOKEN_PRECISION) / lpSupply);
         }
         pending = (user.amount.mul(accSushiPerShare) / ACC_TOKEN_PRECISION).sub(user.rewardDebt);
     }
@@ -169,8 +169,8 @@ contract ComplexRewarderTime is IRewarder,  BoringOwnable{
 
             if (lpSupply > 0) {
                 uint256 time = block.timestamp.sub(pool.lastRewardTime);
-                uint256 sushiReward = time.mul(rewardPerSecond).mul(pool.allocPoint) / totalAllocPoint;
-                pool.accSushiPerShare = pool.accSushiPerShare.add((sushiReward.mul(ACC_TOKEN_PRECISION) / lpSupply).to128());
+                uint256 finaReward = time.mul(rewardPerSecond).mul(pool.allocPoint) / totalAllocPoint;
+                pool.accSushiPerShare = pool.accSushiPerShare.add((finaReward.mul(ACC_TOKEN_PRECISION) / lpSupply).to128());
             }
             pool.lastRewardTime = block.timestamp.to64();
             poolInfo[pid] = pool;

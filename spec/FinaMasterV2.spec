@@ -295,7 +295,7 @@ rule solvency(uint256 pid, address u, address lptoken, method f) {
 	assert userAmount_ != _userAmount => (userAmount_ - _userAmount == balance_ - _balance);
 }
 
-rule sushiGivenInHarvestEqualsPendingSushi(uint256 pid, address user, address to) {
+rule finaGivenInHarvestEqualsPendingSushi(uint256 pid, address user, address to) {
 	env e;
 
 	require to == user && user != currentContract && e.msg.sender == user;
@@ -310,7 +310,7 @@ rule sushiGivenInHarvestEqualsPendingSushi(uint256 pid, address user, address to
 	uint256 userSushiBalance_ = finaToken.balanceOf(e, user);
 
 	assert(userSushiBalance_ == (userSushiBalance + userPendingSushi),
-		   "pending sushi not equal to the sushi given in harvest");
+		   "pending fina not equal to the fina given in harvest");
 }
 
 rule additivityOfDepositOnAmount(uint256 pid, uint256 x, uint256 y, address to) {

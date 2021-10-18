@@ -7,8 +7,8 @@ contract FinaMasterV2Harness is FinaMasterV2 {
     ////////////////////////////////////////////////////////////////////////////
     //                         Constructors and inits                         //
     ////////////////////////////////////////////////////////////////////////////
-    constructor(IFinaMaster _FINA_MASTER, IERC20 _sushi, uint256 _MASTER_PID)
-                    FinaMasterV2(_FINA_MASTER, _sushi, _MASTER_PID) public { }
+    constructor(IFinaMaster _FINA_MASTER, IERC20 _fina, uint256 _MASTER_PID)
+                    FinaMasterV2(_FINA_MASTER, _fina, _MASTER_PID) public { }
 
     ////////////////////////////////////////////////////////////////////////////
     //                        Getters for The Internals                       //
@@ -44,7 +44,7 @@ contract FinaMasterV2Harness is FinaMasterV2 {
             payable returns(bool[] memory successes, bytes[] memory results) { }
 
     mapping(uint256 => uint256) symbolicSushiPerBlock; // random number
-    function sushiPerBlock() public view override returns (uint256 amount) {
+    function finaPerBlock() public view override returns (uint256 amount) {
         return symbolicSushiPerBlock[block.number];
     }
 

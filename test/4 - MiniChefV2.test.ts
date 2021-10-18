@@ -13,19 +13,19 @@ describe("MiniChefV2", function () {
 
   beforeEach(async function () {
     await deploy(this, [
-      ["sushi", this.FinaToken],
+      ["fina", this.FinaToken],
     ])
 
     await deploy(this,
       [["lp", this.ERC20Mock, ["LP Token", "LPT", getBigNumber(10)]],
       ["dummy", this.ERC20Mock, ["Dummy", "DummyT", getBigNumber(10)]],
-      ['chef', this.MiniChefV2, [this.sushi.address]],
+      ['chef', this.MiniChefV2, [this.fina.address]],
       ["rlp", this.ERC20Mock, ["LP", "rLPT", getBigNumber(10)]],
       ["r", this.ERC20Mock, ["Reward", "RewardT", getBigNumber(100000)]],
     ])
     await deploy(this, [["rewarder", this.RewarderMock, [getBigNumber(1), this.r.address, this.chef.address]]])
 
-    await this.sushi.mint(this.chef.address, getBigNumber(10000))
+    await this.fina.mint(this.chef.address, getBigNumber(10000))
     await this.lp.approve(this.chef.address, getBigNumber(10))
     await this.chef.setSushiPerSecond("10000000000000000")
     await this.rlp.transfer(this.bob.address, getBigNumber(1))
@@ -186,7 +186,7 @@ describe("MiniChefV2", function () {
         let expectedSushi = BigNumber.from("10000000000000000").mul(timestamp2 - timestamp)
         expect((await this.chef.userInfo(0, this.alice.address)).rewardDebt).to.be.equal("-"+expectedSushi)
         await this.chef.harvest(0, this.alice.address)
-        expect(await this.sushi.balanceOf(this.alice.address)).to.be.equal(await this.r.balanceOf(this.alice.address)).to.be.equal(expectedSushi)
+        expect(await this.fina.balanceOf(this.alice.address)).to.be.equal(await this.r.balanceOf(this.alice.address)).to.be.equal(expectedSushi)
     })
     it("Harvest with empty user balance", async function () {
       await this.chef.add(10, this.rlp.address, this.rewarder.address)
@@ -205,7 +205,7 @@ describe("MiniChefV2", function () {
       let expectedSushi = BigNumber.from("10000000000000000").mul(timestamp2 - timestamp)
       expect((await this.chef.userInfo(0, this.alice.address)).rewardDebt).to.be.equal("-"+expectedSushi)
       await this.chef.harvest(0, this.alice.address)
-      expect(await this.sushi.balanceOf(this.alice.address)).to.be.equal(expectedSushi)
+      expect(await this.fina.balanceOf(this.alice.address)).to.be.equal(expectedSushi)
     })
   })
 

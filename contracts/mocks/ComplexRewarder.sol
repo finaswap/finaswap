@@ -136,8 +136,8 @@ contract ComplexRewarder is IRewarder,  BoringOwnable{
         uint256 lpSupply = FinaMasterV2(FINAMASTER_V2).lpToken(_pid).balanceOf(FINAMASTER_V2);
         if (block.number > pool.lastRewardBlock && lpSupply != 0) {
             uint256 blocks = block.number.sub(pool.lastRewardBlock);
-            uint256 sushiReward = blocks.mul(tokenPerBlock).mul(pool.allocPoint) / totalAllocPoint;
-            accSushiPerShare = accSushiPerShare.add(sushiReward.mul(ACC_TOKEN_PRECISION) / lpSupply);
+            uint256 finaReward = blocks.mul(tokenPerBlock).mul(pool.allocPoint) / totalAllocPoint;
+            accSushiPerShare = accSushiPerShare.add(finaReward.mul(ACC_TOKEN_PRECISION) / lpSupply);
         }
         pending = (user.amount.mul(accSushiPerShare) / ACC_TOKEN_PRECISION).sub(user.rewardDebt);
     }
@@ -162,8 +162,8 @@ contract ComplexRewarder is IRewarder,  BoringOwnable{
 
             if (lpSupply > 0) {
                 uint256 blocks = block.number.sub(pool.lastRewardBlock);
-                uint256 sushiReward = blocks.mul(tokenPerBlock).mul(pool.allocPoint) / totalAllocPoint;
-                pool.accSushiPerShare = pool.accSushiPerShare.add((sushiReward.mul(ACC_TOKEN_PRECISION) / lpSupply).to128());
+                uint256 finaReward = blocks.mul(tokenPerBlock).mul(pool.allocPoint) / totalAllocPoint;
+                pool.accSushiPerShare = pool.accSushiPerShare.add((finaReward.mul(ACC_TOKEN_PRECISION) / lpSupply).to128());
             }
             pool.lastRewardBlock = block.number.to64();
             poolInfo[pid] = pool;

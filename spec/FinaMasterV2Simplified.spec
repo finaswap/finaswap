@@ -30,7 +30,7 @@ methods {
 	rewarder(uint256 pid) returns (address) envfree
 
 	// overrided methods
-	sushiPerBlock() returns (uint256 amount)
+	finaPerBlock() returns (uint256 amount)
 
 	// ERC20 
 	balanceOf(address) => DISPATCHER(true) 

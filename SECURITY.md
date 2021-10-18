@@ -6,7 +6,7 @@ In case you discover a vulnerability, we would like to know about it immediately
 
 If you discover a vulnerability, please do the following: 
 
-    E-mail your findings to security@sushi.com. 
+    E-mail your findings to security@fina.com. 
 
     Do not take advantage of the vulnerability or similar problems you have discovered, including, but not limited to, testing the vulnerability on the Ethereum mainnet or testnet. 
 

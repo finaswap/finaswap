@@ -11,7 +11,7 @@ describe("FinaChiefBanker", function () {
   beforeEach(async function () {
     // Deploy ERC20 Mocks and Factory
     await deploy(this, [
-      ["sushi", this.ERC20Mock, ["FINA", "FINA", getBigNumber("10000000")]],
+      ["fina", this.ERC20Mock, ["FINA", "FINA", getBigNumber("10000000")]],
       ["dai", this.ERC20Mock, ["DAI", "DAI", getBigNumber("10000000")]],
       ["mic", this.ERC20Mock, ["MIC", "MIC", getBigNumber("10000000")]],
       ["usdc", this.ERC20Mock, ["USDC", "USDC", getBigNumber("10000000")]],
@@ -20,19 +20,19 @@ describe("FinaChiefBanker", function () {
       ["factory", this.UniswapV2Factory, [this.alice.address]],
     ])
     // Deploy Sushi and Kashi contracts
-    await deploy(this, [["bar", this.SushiBar, [this.sushi.address]]])
+    await deploy(this, [["bar", this.SushiBar, [this.fina.address]]])
     await deploy(this, [["bento", this.BentoBoxV1, [this.weth.address]]])
     await deploy(this, [["kashiMaster", this.KashiPairMediumRiskV1, [this.bento.address]]])
-    await deploy(this, [["kashiMaker", this.FinaChiefBanker, [this.factory.address, this.bar.address, this.bento.address, this.sushi.address, this.weth.address, this.factory.pairCodeHash()]]])
+    await deploy(this, [["kashiMaker", this.FinaChiefBanker, [this.factory.address, this.bar.address, this.bento.address, this.fina.address, this.weth.address, this.factory.pairCodeHash()]]])
     await deploy(this, [["exploiter", this.FinaChiefBankerExploitMock, [this.kashiMaker.address]]])
     await deploy(this, [["oracle", this.PeggedOracleV1]])
     // Create SLPs
-    await createSLP(this, "sushiEth", this.sushi, this.weth, getBigNumber(10))
+    await createSLP(this, "finaEth", this.fina, this.weth, getBigNumber(10))
     await createSLP(this, "strudelEth", this.strudel, this.weth, getBigNumber(10))
     await createSLP(this, "daiEth", this.dai, this.weth, getBigNumber(10))
     await createSLP(this, "usdcEth", this.usdc, this.weth, getBigNumber(10))
     await createSLP(this, "micUSDC", this.mic, this.usdc, getBigNumber(10))
-    await createSLP(this, "sushiUSDC", this.sushi, this.usdc, getBigNumber(10))
+    await createSLP(this, "finaUSDC", this.fina, this.usdc, getBigNumber(10))
     await createSLP(this, "daiUSDC", this.dai, this.usdc, getBigNumber(10))
     await createSLP(this, "daiMIC", this.dai, this.mic, getBigNumber(10))
     // Set Kashi fees to Maker
@@ -40,13 +40,13 @@ describe("FinaChiefBanker", function () {
     // Whitelist Kashi on Bento
     await this.bento.whitelistMasterContract(this.kashiMaster.address, true)
     // Approve and make Bento token deposits
-    await this.sushi.approve(this.bento.address, getBigNumber(10))
+    await this.fina.approve(this.bento.address, getBigNumber(10))
     await this.dai.approve(this.bento.address, getBigNumber(10))
     await this.mic.approve(this.bento.address, getBigNumber(10))
     await this.usdc.approve(this.bento.address, getBigNumber(10))
     await this.weth.approve(this.bento.address, getBigNumber(10))
     await this.strudel.approve(this.bento.address, getBigNumber(10))
-    await this.bento.deposit(this.sushi.address, this.alice.address, this.alice.address, getBigNumber(10), 0)
+    await this.bento.deposit(this.fina.address, this.alice.address, this.alice.address, getBigNumber(10), 0)
     await this.bento.deposit(this.dai.address, this.alice.address, this.alice.address, getBigNumber(10), 0)
     await this.bento.deposit(this.mic.address, this.alice.address, this.alice.address, getBigNumber(10), 0)
     await this.bento.deposit(this.usdc.address, this.alice.address, this.alice.address, getBigNumber(10), 0)
@@ -56,21 +56,21 @@ describe("FinaChiefBanker", function () {
     await this.bento.setMasterContractApproval(this.alice.address, this.kashiMaster.address, true, "0", "0x0000000000000000000000000000000000000000000000000000000000000000", "0x0000000000000000000000000000000000000000000000000000000000000000")
     // **TO-DO - Initialize Kashi Pair**
     //const oracleData = await this.oracle.getDataParameter("1")
-    //const initData = defaultAbiCoder.encode(["address", "address", "address", "bytes"], [this.sushi.address, this.dai.address, this.oracle.address, oracleData])
+    //const initData = defaultAbiCoder.encode(["address", "address", "address", "bytes"], [this.fina.address, this.dai.address, this.oracle.address, oracleData])
     //await this.bento.deploy(this.KashiMaster.address, initData, true)
   })
 
   describe("setBridge", function () {
     it("only allows the owner to set bridge", async function () {
-      await expect(this.kashiMaker.connect(this.bob).setBridge(this.sushi.address, this.weth.address, { from: this.bob.address })).to.be.revertedWith("Ownable: caller is not the owner")
+      await expect(this.kashiMaker.connect(this.bob).setBridge(this.fina.address, this.weth.address, { from: this.bob.address })).to.be.revertedWith("Ownable: caller is not the owner")
     })
     
     it("does not allow to set bridge for Sushi", async function () {
-      await expect(this.kashiMaker.setBridge(this.sushi.address, this.weth.address)).to.be.revertedWith("Maker: Invalid bridge")
+      await expect(this.kashiMaker.setBridge(this.fina.address, this.weth.address)).to.be.revertedWith("Maker: Invalid bridge")
     })
 
     it("does not allow to set bridge for WETH", async function () {
-      await expect(this.kashiMaker.setBridge(this.weth.address, this.sushi.address)).to.be.revertedWith("Maker: Invalid bridge")
+      await expect(this.kashiMaker.setBridge(this.weth.address, this.fina.address)).to.be.revertedWith("Maker: Invalid bridge")
     })
 
     it("does not allow to set bridge to itself", async function () {
@@ -78,15 +78,15 @@ describe("FinaChiefBanker", function () {
     })
 
     it("emits correct event on bridge", async function () {
-      await expect(this.kashiMaker.setBridge(this.dai.address, this.sushi.address))
+      await expect(this.kashiMaker.setBridge(this.dai.address, this.fina.address))
         .to.emit(this.kashiMaker, "LogBridgeSet")
-        .withArgs(this.dai.address, this.sushi.address)
+        .withArgs(this.dai.address, this.fina.address)
     })
   })
   
   describe("convert", function () {
     it("reverts if caller is not EOA", async function () {
-      await expect(this.exploiter.convert(this.sushi.address)).to.be.revertedWith("Maker: Must use EOA")
+      await expect(this.exploiter.convert(this.fina.address)).to.be.revertedWith("Maker: Must use EOA")
     })
   })
 })

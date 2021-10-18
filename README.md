@@ -1,10 +1,10 @@
 # SushiSwap
 
-https://sushi.com/
+https://fina.com/
 
 ## Deployed Contracts
 
-https://dev.sushi.com/sushiswap/contracts
+https://dev.fina.com/finaswap/contracts
 
 ## Docs
 

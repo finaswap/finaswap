@@ -38,7 +38,7 @@ contract FinaChiefBanker is Ownable {
     //0x8798249c2E607446EfB7Ad49eC89dD1865Ff4272
     IBentoBoxWithdraw private immutable bentoBox;
     //0xF5BCE5077908a1b7370B9ae04AdC565EBd643966 
-    address private immutable sushi;
+    address private immutable fina;
     //0x6B3595068778DD592e39A122f4f5a5cF09C90fE2
     address private immutable weth;
     //0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2
@@ -60,14 +60,14 @@ contract FinaChiefBanker is Ownable {
         IUniswapV2Factory _factory,
         address _bar,
         IBentoBoxWithdraw _bentoBox,
-        address _sushi,
+        address _fina,
         address _weth,
         bytes32 _pairCodeHash
     ) public {
         factory = _factory;
         bar = _bar;
         bentoBox = _bentoBox;
-        sushi = _sushi;
+        fina = _fina;
         weth = _weth;
         pairCodeHash = _pairCodeHash;
     }
@@ -75,7 +75,7 @@ contract FinaChiefBanker is Ownable {
     function setBridge(address token, address bridge) external onlyOwner {
         // Checks
         require(
-            token != sushi && token != weth && token != bridge,
+            token != fina && token != weth && token != bridge,
             "Maker: Invalid bridge"
         );
         // Effects
@@ -119,19 +119,19 @@ contract FinaChiefBanker is Ownable {
         );
     }
 
-    function _convertStep(address token0, uint256 amount0) private returns (uint256 sushiOut) {
-        if (token0 == sushi) {
+    function _convertStep(address token0, uint256 amount0) private returns (uint256 finaOut) {
+        if (token0 == fina) {
             IERC20(token0).safeTransfer(bar, amount0);
-            sushiOut = amount0;
+            finaOut = amount0;
         } else if (token0 == weth) {
-            sushiOut = _swap(token0, sushi, amount0, bar);
+            finaOut = _swap(token0, fina, amount0, bar);
         } else {
             address bridge = _bridges[token0];
             if (bridge == address(0)) {
                 bridge = weth;
             }
             uint256 amountOut = _swap(token0, bridge, amount0, address(this));
-            sushiOut = _convertStep(bridge, amountOut);
+            finaOut = _convertStep(bridge, amountOut);
         }
     }
 

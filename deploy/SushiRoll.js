@@ -20,11 +20,11 @@ module.exports = async function ({ getNamedAccounts, getChainId, deployments }) 
 
   const uniswapRouterAddress = UNISWAP_ROUTER.get(chainId)
 
-  const sushiswapRouterAddress = (await deployments.get("UniswapV2Router02")).address
+  const finaswapRouterAddress = (await deployments.get("UniswapV2Router02")).address
 
   await deploy("SushiRoll", {
     from: deployer,
-    args: [uniswapRouterAddress, sushiswapRouterAddress],
+    args: [uniswapRouterAddress, finaswapRouterAddress],
     log: true,
     deterministicDeployment: false
   })

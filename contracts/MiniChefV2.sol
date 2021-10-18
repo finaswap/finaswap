@@ -61,7 +61,7 @@ contract MiniChefV2 is BoringOwnable, BoringBatchable {
     /// @dev Total allocation points. Must be the sum of all allocation points in all pools.
     uint256 public totalAllocPoint;
 
-    uint256 public sushiPerSecond;
+    uint256 public finaPerSecond;
     uint256 private constant ACC_FINA_PRECISION = 1e12;
 
     event Deposit(address indexed user, uint256 indexed pid, uint256 amount, address indexed to);
@@ -71,11 +71,11 @@ contract MiniChefV2 is BoringOwnable, BoringBatchable {
     event LogPoolAddition(uint256 indexed pid, uint256 allocPoint, IERC20 indexed lpToken, IRewarder indexed rewarder);
     event LogSetPool(uint256 indexed pid, uint256 allocPoint, IRewarder indexed rewarder, bool overwrite);
     event LogUpdatePool(uint256 indexed pid, uint64 lastRewardTime, uint256 lpSupply, uint256 accSushiPerShare);
-    event LogSushiPerSecond(uint256 sushiPerSecond);
+    event LogSushiPerSecond(uint256 finaPerSecond);
 
-    /// @param _sushi The FINA token contract address.
-    constructor(IERC20 _sushi) public {
-        FINA = _sushi;
+    /// @param _fina The FINA token contract address.
+    constructor(IERC20 _fina) public {
+        FINA = _fina;
     }
 
     /// @notice Returns the number of MCV2 pools.
@@ -113,11 +113,11 @@ contract MiniChefV2 is BoringOwnable, BoringBatchable {
         emit LogSetPool(_pid, _allocPoint, overwrite ? _rewarder : rewarder[_pid], overwrite);
     }
 
-    /// @notice Sets the sushi per second to be distributed. Can only be called by the owner.
-    /// @param _sushiPerSecond The amount of Sushi to be distributed per second.
-    function setSushiPerSecond(uint256 _sushiPerSecond) public onlyOwner {
-        sushiPerSecond = _sushiPerSecond;
-        emit LogSushiPerSecond(_sushiPerSecond);
+    /// @notice Sets the fina per second to be distributed. Can only be called by the owner.
+    /// @param _finaPerSecond The amount of Sushi to be distributed per second.
+    function setSushiPerSecond(uint256 _finaPerSecond) public onlyOwner {
+        finaPerSecond = _finaPerSecond;
+        emit LogSushiPerSecond(_finaPerSecond);
     }
 
     /// @notice Set the `migrator` contract. Can only be called by the owner.
@@ -149,8 +149,8 @@ contract MiniChefV2 is BoringOwnable, BoringBatchable {
         uint256 lpSupply = lpToken[_pid].balanceOf(address(this));
         if (block.timestamp > pool.lastRewardTime && lpSupply != 0) {
             uint256 time = block.timestamp.sub(pool.lastRewardTime);
-            uint256 sushiReward = time.mul(sushiPerSecond).mul(pool.allocPoint) / totalAllocPoint;
-            accSushiPerShare = accSushiPerShare.add(sushiReward.mul(ACC_FINA_PRECISION) / lpSupply);
+            uint256 finaReward = time.mul(finaPerSecond).mul(pool.allocPoint) / totalAllocPoint;
+            accSushiPerShare = accSushiPerShare.add(finaReward.mul(ACC_FINA_PRECISION) / lpSupply);
         }
         pending = int256(user.amount.mul(accSushiPerShare) / ACC_FINA_PRECISION).sub(user.rewardDebt).toUInt256();
     }
@@ -173,8 +173,8 @@ contract MiniChefV2 is BoringOwnable, BoringBatchable {
             uint256 lpSupply = lpToken[pid].balanceOf(address(this));
             if (lpSupply > 0) {
                 uint256 time = block.timestamp.sub(pool.lastRewardTime);
-                uint256 sushiReward = time.mul(sushiPerSecond).mul(pool.allocPoint) / totalAllocPoint;
-                pool.accSushiPerShare = pool.accSushiPerShare.add((sushiReward.mul(ACC_FINA_PRECISION) / lpSupply).to128());
+                uint256 finaReward = time.mul(finaPerSecond).mul(pool.allocPoint) / totalAllocPoint;
+                pool.accSushiPerShare = pool.accSushiPerShare.add((finaReward.mul(ACC_FINA_PRECISION) / lpSupply).to128());
             }
             pool.lastRewardTime = block.timestamp.to64();
             poolInfo[pid] = pool;

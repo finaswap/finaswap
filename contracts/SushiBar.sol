@@ -11,18 +11,18 @@ import "@openzeppelin/contracts/math/SafeMath.sol";
 // This contract handles swapping to and from xSushi, SushiSwap's staking token.
 contract SushiBar is ERC20("SushiBar", "xFINA"){
     using SafeMath for uint256;
-    IERC20 public sushi;
+    IERC20 public fina;
 
     // Define the Sushi token contract
-    constructor(IERC20 _sushi) public {
-        sushi = _sushi;
+    constructor(IERC20 _fina) public {
+        fina = _fina;
     }
 
     // Enter the bar. Pay some FINAs. Earn some shares.
     // Locks Sushi and mints xSushi
     function enter(uint256 _amount) public {
         // Gets the amount of Sushi locked in the contract
-        uint256 totalSushi = sushi.balanceOf(address(this));
+        uint256 totalSushi = fina.balanceOf(address(this));
         // Gets the amount of xSushi in existence
         uint256 totalShares = totalSupply();
         // If no xSushi exists, mint it 1:1 to the amount put in
@@ -35,7 +35,7 @@ contract SushiBar is ERC20("SushiBar", "xFINA"){
             _mint(msg.sender, what);
         }
         // Lock the Sushi in the contract
-        sushi.transferFrom(msg.sender, address(this), _amount);
+        fina.transferFrom(msg.sender, address(this), _amount);
     }
 
     // Leave the bar. Claim back your FINAs.
@@ -44,8 +44,8 @@ contract SushiBar is ERC20("SushiBar", "xFINA"){
         // Gets the amount of xSushi in existence
         uint256 totalShares = totalSupply();
         // Calculates the amount of Sushi the xSushi is worth
-        uint256 what = _share.mul(sushi.balanceOf(address(this))).div(totalShares);
+        uint256 what = _share.mul(fina.balanceOf(address(this))).div(totalShares);
         _burn(msg.sender, _share);
-        sushi.transfer(msg.sender, what);
+        fina.transfer(msg.sender, what);
     }
 }

@@ -1,4 +1,4 @@
-const { WETH } = require("@sushiswap/sdk");
+const { WETH } = require("@finaswap/sdk");
 
 module.exports = async function ({ getNamedAccounts, deployments }) {
   const { deploy } = deployments;

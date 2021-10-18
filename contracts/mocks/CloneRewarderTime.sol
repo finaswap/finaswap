@@ -96,7 +96,7 @@ contract CloneRewarderTime is IRewarder,  BoringOwnable{
         return (_rewardRates);
     }
 
-    /// @notice Sets the sushi per second to be distributed. Can only be called by the owner.
+    /// @notice Sets the fina per second to be distributed. Can only be called by the owner.
     /// @param _rewardPerSecond The amount of Sushi to be distributed per second.
     function setRewardPerSecond(uint256 _rewardPerSecond) public onlyOwner {
         rewardPerSecond = _rewardPerSecond;
@@ -122,8 +122,8 @@ contract CloneRewarderTime is IRewarder,  BoringOwnable{
         uint256 lpSupply = IFinaMasterV2(FINAMASTER_V2).lpToken(_pid).balanceOf(FINAMASTER_V2);
         if (block.timestamp > pool.lastRewardTime && lpSupply != 0) {
             uint256 time = block.timestamp.sub(pool.lastRewardTime);
-            uint256 sushiReward = time.mul(rewardPerSecond);
-            accToken1PerShare = accToken1PerShare.add(sushiReward.mul(ACC_TOKEN_PRECISION) / lpSupply);
+            uint256 finaReward = time.mul(rewardPerSecond);
+            accToken1PerShare = accToken1PerShare.add(finaReward.mul(ACC_TOKEN_PRECISION) / lpSupply);
         }
         pending = (user.amount.mul(accToken1PerShare) / ACC_TOKEN_PRECISION).sub(user.rewardDebt);
     }
@@ -138,8 +138,8 @@ contract CloneRewarderTime is IRewarder,  BoringOwnable{
 
             if (lpSupply > 0) {
                 uint256 time = block.timestamp.sub(pool.lastRewardTime);
-                uint256 sushiReward = time.mul(rewardPerSecond);
-                pool.accToken1PerShare = pool.accToken1PerShare.add((sushiReward.mul(ACC_TOKEN_PRECISION) / lpSupply).to128());
+                uint256 finaReward = time.mul(rewardPerSecond);
+                pool.accToken1PerShare = pool.accToken1PerShare.add((finaReward.mul(ACC_TOKEN_PRECISION) / lpSupply).to128());
             }
             pool.lastRewardTime = block.timestamp.to64();
             poolInfo[pid] = pool;

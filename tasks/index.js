@@ -232,11 +232,11 @@ task("masterchef:withdraw", "FinaMaster withdraw")
 task("bar:enter", "SushiBar enter")
 .addParam("amount", "Amount")
 .setAction(async function ({ amount }, { ethers: { getNamedSigner } }, runSuper) {
-  const sushi = await ethers.getContract("FinaToken")
+  const fina = await ethers.getContract("FinaToken")
 
   const bar = await ethers.getContract("SushiBar")
 
-  await run("erc20:approve", { token: sushi.address, spender: bar.address })
+  await run("erc20:approve", { token: fina.address, spender: bar.address })
   
   await (await bar.connect(await getNamedSigner("dev")).enter(amount)).wait()
 });
@@ -244,11 +244,11 @@ task("bar:enter", "SushiBar enter")
 task("bar:leave", "SushiBar leave")
 .addParam("amount", "Amount")
 .setAction(async function ({ amount }, { ethers: { getNamedSigner } }, runSuper) {
-  const sushi = await ethers.getContract("FinaToken")
+  const fina = await ethers.getContract("FinaToken")
 
   const bar = await ethers.getContract("SushiBar")
 
-  await run("erc20:approve", { token: sushi.address, spender: bar.address })
+  await run("erc20:approve", { token: fina.address, spender: bar.address })
   
   await (await bar.connect(await getNamedSigner("dev")).leave(amount)).wait()
 });

@@ -78,11 +78,11 @@ contract FinaMasterV2 is BoringOwnable, BoringBatchable {
     event LogInit();
 
     /// @param _FINA_MASTER The SushiSwap MCV1 contract address.
-    /// @param _sushi The FINA token contract address.
+    /// @param _fina The FINA token contract address.
     /// @param _MASTER_PID The pool ID of the dummy token on the base MCV1 contract.
-    constructor(IFinaMaster _FINA_MASTER, IERC20 _sushi, uint256 _MASTER_PID) public {
+    constructor(IFinaMaster _FINA_MASTER, IERC20 _fina, uint256 _MASTER_PID) public {
         FINA_MASTER = _FINA_MASTER;
-        FINA = _sushi;
+        FINA = _fina;
         MASTER_PID = _MASTER_PID;
     }
 
@@ -164,8 +164,8 @@ contract FinaMasterV2 is BoringOwnable, BoringBatchable {
         uint256 lpSupply = lpToken[_pid].balanceOf(address(this));
         if (block.number > pool.lastRewardBlock && lpSupply != 0) {
             uint256 blocks = block.number.sub(pool.lastRewardBlock);
-            uint256 sushiReward = blocks.mul(sushiPerBlock()).mul(pool.allocPoint) / totalAllocPoint;
-            accSushiPerShare = accSushiPerShare.add(sushiReward.mul(ACC_FINA_PRECISION) / lpSupply);
+            uint256 finaReward = blocks.mul(finaPerBlock()).mul(pool.allocPoint) / totalAllocPoint;
+            accSushiPerShare = accSushiPerShare.add(finaReward.mul(ACC_FINA_PRECISION) / lpSupply);
         }
         pending = int256(user.amount.mul(accSushiPerShare) / ACC_FINA_PRECISION).sub(user.rewardDebt).toUInt256();
     }
@@ -180,7 +180,7 @@ contract FinaMasterV2 is BoringOwnable, BoringBatchable {
     }
 
     /// @notice Calculates and returns the `amount` of FINA per block.
-    function sushiPerBlock() public view returns (uint256 amount) {
+    function finaPerBlock() public view returns (uint256 amount) {
         amount = uint256(FINAMASTER_FINA_PER_BLOCK)
             .mul(FINA_MASTER.poolInfo(MASTER_PID).allocPoint) / FINA_MASTER.totalAllocPoint();
     }
@@ -194,8 +194,8 @@ contract FinaMasterV2 is BoringOwnable, BoringBatchable {
             uint256 lpSupply = lpToken[pid].balanceOf(address(this));
             if (lpSupply > 0) {
                 uint256 blocks = block.number.sub(pool.lastRewardBlock);
-                uint256 sushiReward = blocks.mul(sushiPerBlock()).mul(pool.allocPoint) / totalAllocPoint;
-                pool.accSushiPerShare = pool.accSushiPerShare.add((sushiReward.mul(ACC_FINA_PRECISION) / lpSupply).to128());
+                uint256 finaReward = blocks.mul(finaPerBlock()).mul(pool.allocPoint) / totalAllocPoint;
+                pool.accSushiPerShare = pool.accSushiPerShare.add((finaReward.mul(ACC_FINA_PRECISION) / lpSupply).to128());
             }
             pool.lastRewardBlock = block.number.to64();
             poolInfo[pid] = pool;

@@ -11,23 +11,23 @@ describe("FinaMasterV2", function () {
 
   beforeEach(async function () {
     await deploy(this, [
-      ["sushi", this.FinaToken],
+      ["fina", this.FinaToken],
     ])
 
     await deploy(this,
       [["lp", this.ERC20Mock, ["LP Token", "LPT", getBigNumber(10)]],
       ["dummy", this.ERC20Mock, ["Dummy", "DummyT", getBigNumber(10)]],
-      ['chef', this.FinaMaster, [this.sushi.address, this.bob.address, getBigNumber(100), "0", "0"]]
+      ['chef', this.FinaMaster, [this.fina.address, this.bob.address, getBigNumber(100), "0", "0"]]
     ])
 
-    await this.sushi.transferOwnership(this.chef.address)
+    await this.fina.transferOwnership(this.chef.address)
     await this.chef.add(100, this.lp.address, true)
     await this.chef.add(100, this.dummy.address, true)
     await this.lp.approve(this.chef.address, getBigNumber(10))
     await this.chef.deposit(0, getBigNumber(10))
 
     await deploy(this, [
-        ['chef2', this.FinaMasterV2, [this.chef.address, this.sushi.address, 1]],
+        ['chef2', this.FinaMasterV2, [this.chef.address, this.fina.address, 1]],
         ["rlp", this.ERC20Mock, ["LP", "rLPT", getBigNumber(10)]],
         ["r", this.ERC20Mock, ["Reward", "RewardT", getBigNumber(100000)]],
     ])
@@ -195,7 +195,7 @@ describe("FinaMasterV2", function () {
         let expectedSushi = getBigNumber(100).mul(log2.blockNumber - log.blockNumber).div(2)
         expect((await this.chef2.userInfo(0, this.alice.address)).rewardDebt).to.be.equal("-"+expectedSushi)
         await this.chef2.harvest(0, this.alice.address)
-        expect(await this.sushi.balanceOf(this.alice.address)).to.be.equal(await this.r.balanceOf(this.alice.address)).to.be.equal(expectedSushi)
+        expect(await this.fina.balanceOf(this.alice.address)).to.be.equal(await this.r.balanceOf(this.alice.address)).to.be.equal(expectedSushi)
     })
     it("Harvest with empty user balance", async function () {
       await this.chef2.add(10, this.rlp.address, this.rewarder.address)
@@ -213,7 +213,7 @@ describe("FinaMasterV2", function () {
       let expectedSushi = getBigNumber(100).mul(log2.blockNumber - log.blockNumber).div(2)
       expect((await this.chef2.userInfo(0, this.alice.address)).rewardDebt).to.be.equal("-"+expectedSushi)
       await this.chef2.harvest(0, this.alice.address)
-      expect(await this.sushi.balanceOf(this.alice.address)).to.be.equal(expectedSushi)
+      expect(await this.fina.balanceOf(this.alice.address)).to.be.equal(expectedSushi)
     })
   })
 

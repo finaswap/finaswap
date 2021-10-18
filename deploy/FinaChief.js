@@ -1,4 +1,4 @@
-const { WETH } = require("@sushiswap/sdk")
+const { WETH } = require("@finaswap/sdk")
 
 module.exports = async function ({ ethers: { getNamedSigner }, getNamedAccounts, deployments }) {
   const { deploy } = deployments
@@ -9,7 +9,7 @@ module.exports = async function ({ ethers: { getNamedSigner }, getNamedAccounts,
 
   const factory = await ethers.getContract("UniswapV2Factory")
   const bar = await ethers.getContract("SushiBar")
-  const sushi = await ethers.getContract("FinaToken")
+  const fina = await ethers.getContract("FinaToken")
   
   let wethAddress;
   
@@ -23,7 +23,7 @@ module.exports = async function ({ ethers: { getNamedSigner }, getNamedAccounts,
 
   await deploy("FinaChief", {
     from: deployer,
-    args: [factory.address, bar.address, sushi.address, wethAddress],
+    args: [factory.address, bar.address, fina.address, wethAddress],
     log: true,
     deterministicDeployment: false
   })
