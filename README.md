@@ -1,6 +1,6 @@
 # FinaSwap
 
-https://fina.com/
+https://finaswap.com/
 
 ## Deployed Contracts
 
