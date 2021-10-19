@@ -29,7 +29,7 @@
     "build": "hardhat compile",
     "console": "hardhat console",
     "testnet:deploy": "yarn ropsten:deploy && yarn rinkeby:deploy && yarn goerli:deploy && yarn kovan:deploy && yarn moonbase:deploy && yarn arbitrum:deploy",
-	"bsc-testnet:deploy": "hardhat --network bsc-testnet deploy",
+    "bsc-testnet:deploy": "hardhat --network bsc-testnet deploy",
     "mainnet:deploy": "hardhat --network mainnet deploy",
     "mainnet:verify": "hardhat --network mainnet etherscan-verify --solc-input",
     "mainnet:export": "hardhat --network mainnet export --export exports/mainnet.json",
@@ -59,6 +59,7 @@
   },
   "devDependencies": {
     "@boringcrypto/boring-solidity": "boringcrypto/BoringSolidity#e06e943",
+    "@finaswap/sdk": "^1.0.0",
     "@nomiclabs/hardhat-ethers": "^2.0.0",
     "@nomiclabs/hardhat-etherscan": "^2.1.0",
     "@nomiclabs/hardhat-solhint": "^2.0.0",
@@ -68,7 +69,6 @@
     "@typechain/ethers-v5": "^5.0.0",
     "@types/mocha": "^8.2.1",
     "@types/node": "^14.14.31",
-	"@finaswap/sdk": "^1.0.0",
     "@uniswap/v2-core": "git://github.com/uniswap/uniswap-v2-core.git#27f6354bae6685612c182c3bc7577e61bc8717e3",
     "chai": "^4.2.0",
     "cross-env": "^7.0.0",
@@ -91,5 +91,8 @@
     "ts-node": "^9.1.1",
     "typechain": "^4.0.2",
     "typescript": "^4.2.2"
+  },
+  "dependencies": {
+    "eip-712": "^0.4.3"
   }
 }
