@@ -447,10 +447,10 @@
     "@ethersproject/properties" "^5.0.7"
     "@ethersproject/strings" "^5.0.8"
 
-"@finaswap/sdk@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@finaswap/sdk/-/sdk-1.0.0.tgz#ae5f238bd062dc13b429c528b2ba00e134dbfb25"
-  integrity sha512-R6c/w7ZWGGKnzqBU+MN8GKSmEZmwNX6z8vrC8MtZIR5Y/e/RAbIGoD/E3KtB7jpYslIh1d8OqK9nGHFXJxaqxA==
+"@finaswap/sdk@^1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@finaswap/sdk/-/sdk-1.0.1.tgz#962f39ffc1321d8be4a6d77e80593c39dcb82b69"
+  integrity sha512-ZGwCBZdx32ul4GOuYLlyhBD6mdEAumT+sFzvOPO6+q7XbnRQOa6XLPyB/cFiLEYfOkJ4wbhPYblQUYV+ZUN/Ew==
   dependencies:
     big.js "^6.1.0"
     decimal.js-light "^2.5.0"
