@@ -1,8 +1,8 @@
-// Defining bytecode and abi from original contract on mainnet to ensure bytecode matches and it produces the same pair code hash
+// Defining bytecode and abi from compiled contract to ensure bytecode matches and it produces the same pair code hash
 const {
   bytecode,
   abi,
-} = require("../deployments/mainnet/UniswapV2Factory.json");
+} = require("../deployments/uniswap/UniswapV2Factory.json");
 
 module.exports = async function ({
   ethers,

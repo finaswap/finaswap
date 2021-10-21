@@ -43,7 +43,7 @@ contract FinaChiefBanker is Ownable {
     address private immutable weth;
     //0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2
     bytes32 private immutable pairCodeHash;
-    //0xe18a34eb0e04b04f7a0ac29a6e80748dca96319b42c54d679cb821dca90c6303
+    //0xb5e5dc981b9ca7da2e24bd77420505f4dfaf584b996782257e69196a6dd7cdac
 
     mapping(address => address) private _bridges;
 
