@@ -2,7 +2,7 @@ const { ChainId } = require("@finaswap/sdk")
 
 
 const FINA = {
-  [ChainId.MATIC]: '0x0b3F868E0BE5597D5DB7fEB59E1CADBb0fdDa50a'
+
 }
 
 module.exports = async function ({ ethers, deployments, getNamedAccounts }) {
