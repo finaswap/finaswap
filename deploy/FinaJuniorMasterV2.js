@@ -2,7 +2,7 @@ const { ChainId } = require("@finaswap/sdk")
 
 
 const FINA = {
-
+	[ChainId.ROPSTEN]: '0x427A938f0C78e9e9D487e0EA0063Ebeb620b09aF'
 }
 
 module.exports = async function ({ ethers, deployments, getNamedAccounts }) {
