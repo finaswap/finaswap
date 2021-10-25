@@ -44,9 +44,9 @@ describe("FinaLounge", function () {
     expect(await this.lounge.balanceOf(this.alice.address)).to.equal("20")
     expect(await this.lounge.balanceOf(this.bob.address)).to.equal("10")
     expect(await this.fina.balanceOf(this.lounge.address)).to.equal("30")
-    // FinaLounge get 20 more FINAs from an external source.
+    // FinaLounge get 20 more FNAs from an external source.
     await this.fina.connect(this.carol).transfer(this.lounge.address, "20", { from: this.carol.address })
-    // Alice deposits 10 more FINAs. She should receive 10*30/50 = 6 shares.
+    // Alice deposits 10 more FNAs. She should receive 10*30/50 = 6 shares.
     await this.lounge.enter("10")
     expect(await this.lounge.balanceOf(this.alice.address)).to.equal("26")
     expect(await this.lounge.balanceOf(this.bob.address)).to.equal("10")

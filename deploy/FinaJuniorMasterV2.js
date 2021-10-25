@@ -1,8 +1,8 @@
 const { ChainId } = require("@finaswap/sdk")
 
 
-const FINA = {
-	[ChainId.ROPSTEN]: '0x427A938f0C78e9e9D487e0EA0063Ebeb620b09aF'
+const FNA = {
+	[ChainId.ROPSTEN]: '0x4dB99c31039a17F627f26CC831b8DCebbd958CfC'
 }
 
 module.exports = async function ({ ethers, deployments, getNamedAccounts }) {
@@ -16,10 +16,10 @@ module.exports = async function ({ ethers, deployments, getNamedAccounts }) {
 
   if (chainId === '31337') {
     finaAddress = (await deployments.get("FinaToken")).address
-  } else if (chainId in FINA) {
-    finaAddress = FINA[chainId]
+  } else if (chainId in FNA) {
+    finaAddress = FNA[chainId]
   } else {
-    throw Error("No FINA!")
+    throw Error("No FNA!")
   }
 
   await deploy("FinaJuniorMasterV2", {

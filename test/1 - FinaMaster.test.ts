@@ -91,7 +91,7 @@ describe("FinaMaster", function () {
       expect(await this.lp.balanceOf(this.bob.address)).to.equal("1000")
     })
 
-    it("should give out FINAs only after farming time", async function () {
+    it("should give out FNAs only after farming time", async function () {
       // 100 per block farming rate starting at block 100 with bonus until block 1000
       this.finaMaster = await this.FinaMaster.deploy(this.fina.address, this.dev.address, "100", "100", "1000")
       await this.finaMaster.deployed()
@@ -127,7 +127,7 @@ describe("FinaMaster", function () {
       expect(await this.fina.totalSupply()).to.equal("5500")
     })
 
-    it("should not distribute FINAs if no one deposit", async function () {
+    it("should not distribute FNAs if no one deposit", async function () {
       // 100 per block farming rate starting at block 200 with bonus until block 1000
       this.finaMaster = await this.FinaMaster.deploy(this.fina.address, this.dev.address, "100", "200", "1000")
       await this.finaMaster.deployed()
@@ -152,7 +152,7 @@ describe("FinaMaster", function () {
       expect(await this.lp.balanceOf(this.bob.address)).to.equal("1000")
     })
 
-    it("should distribute FINAs properly for each staker", async function () {
+    it("should distribute FNAs properly for each staker", async function () {
       // 100 per block farming rate starting at block 300 with bonus until block 1000
       this.finaMaster = await this.FinaMaster.deploy(this.fina.address, this.dev.address, "100", "300", "1000")
       await this.finaMaster.deployed()
@@ -220,7 +220,7 @@ describe("FinaMaster", function () {
       expect(await this.lp.balanceOf(this.carol.address)).to.equal("1000")
     })
 
-    it("should give proper FINAs allocation to each pool", async function () {
+    it("should give proper FNAs allocation to each pool", async function () {
       // 100 per block farming rate starting at block 400 with bonus until block 1000
       this.finaMaster = await this.FinaMaster.deploy(this.fina.address, this.dev.address, "100", "400", "1000")
       await this.fina.transferOwnership(this.finaMaster.address)
@@ -247,7 +247,7 @@ describe("FinaMaster", function () {
       expect(await this.finaMaster.pendingFina(1, this.bob.address)).to.equal("3333")
     })
 
-    it("should stop giving bonus FINAs after the bonus period ends", async function () {
+    it("should stop giving bonus FNAs after the bonus period ends", async function () {
       // 100 per block farming rate starting at block 500 with bonus until block 600
       this.finaMaster = await this.FinaMaster.deploy(this.fina.address, this.dev.address, "100", "500", "600")
       await this.fina.transferOwnership(this.finaMaster.address)

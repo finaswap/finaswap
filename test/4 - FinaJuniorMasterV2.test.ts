@@ -173,7 +173,7 @@ describe("FinaJuniorMasterV2", function () {
   })
 
   describe("Harvest", function () {
-    it("Should give back the correct amount of FINA and reward", async function () {
+    it("Should give back the correct amount of FNA and reward", async function () {
         await this.r.transfer(this.rewarder.address, getBigNumber(100000))
         await this.chef.add(10, this.rlp.address, this.rewarder.address)
         await this.rlp.approve(this.chef.address, getBigNumber(10))
@@ -193,7 +193,7 @@ describe("FinaJuniorMasterV2", function () {
       await this.chef.harvest(0, this.alice.address)
     })
 
-    it("Harvest for FINA-only pool", async function () {
+    it("Harvest for FNA-only pool", async function () {
       await this.chef.add(10, this.rlp.address, ADDRESS_ZERO)
       await this.rlp.approve(this.chef.address, getBigNumber(10))
       expect(await this.chef.lpToken(0)).to.be.equal(this.rlp.address)

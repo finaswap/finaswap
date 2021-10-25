@@ -8,7 +8,7 @@
 // Declaration of contracts used in the sepc 
 using DummyERC20A as tokenA
 using DummyERC20B as tokenB
-using DummyFINA as finaToken
+using DummyFNA as finaToken
 
 /*
  * Declaration of methods that are used in the rules.
@@ -55,8 +55,8 @@ methods {
 	lpTokenLength() returns (uint256) envfree // NOT USED
 	rewarderLength() returns (uint256) envfree // NOT USED
 
-	// FINA token
-	FINA() returns (address) envfree // NOT USED
+	// FNA token
+	FNA() returns (address) envfree // NOT USED
 	finaToken.balanceOf(address) returns (uint256) // NOT USED
 
 	// Dummy ERC20
@@ -64,7 +64,7 @@ methods {
 	tokenB.balanceOf(address) returns (uint256) // NOT USED
 
 	// Rewarder
-	// SIG_ON_FINA_REWARD = 0xbb6cc2ef; // onFinaReward(uint256,address,uint256)
+	// SIG_ON_FNA_REWARD = 0xbb6cc2ef; // onFinaReward(uint256,address,uint256)
 	0xbb6cc2ef => NONDET
 
 	// FinaMasterV1

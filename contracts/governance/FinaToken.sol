@@ -9,7 +9,7 @@ contract FinaToken is Ownable {
     uint256 private _totalSupply;
 	
     string private _name = "FinaToken";
-    string private _symbol = "FINA";
+    string private _symbol = "FNA";
     uint8 private _decimals = 18;
     /**
      * @dev Returns the name of the token.

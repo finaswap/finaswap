@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: agpl-3.0
 pragma solidity ^0.6.8;
 
-contract DummyFINA {
+contract DummyFNA {
     uint256 t;
     mapping (address => uint256) b;
     mapping (address => mapping (address => uint256)) a;

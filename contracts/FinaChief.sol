@@ -44,7 +44,7 @@ contract FinaChief is Ownable {
         address indexed token1,
         uint256 amount0,
         uint256 amount1,
-        uint256 amountFINA
+        uint256 amountFNA
     );
 
     constructor(
@@ -93,7 +93,7 @@ contract FinaChief is Ownable {
 
     // F1 - F10: OK
     // F3: _convert is separate to save gas by only checking the 'onlyEOA' modifier once in case of convertMultiple
-    // F6: There is an exploit to add lots of FINA to the lounge, run convert, then remove the FINA again.
+    // F6: There is an exploit to add lots of FNA to the lounge, run convert, then remove the FNA again.
     //     As the size of the FinaLounge has grown, this requires large amounts of funds and isn't super profitable anymore
     //     The onlyEOA modifier prevents this being done with a flash loan.
     // C1 - C24: OK
@@ -145,7 +145,7 @@ contract FinaChief is Ownable {
 
     // F1 - F10: OK
     // C1 - C24: OK
-    // All safeTransfer, _swap, _toFINA, _convertStep: X1 - X5: OK
+    // All safeTransfer, _swap, _toFNA, _convertStep: X1 - X5: OK
     function _convertStep(
         address token0,
         address token1,
@@ -159,29 +159,29 @@ contract FinaChief is Ownable {
                 IERC20(fina).safeTransfer(lounge, amount);
                 finaOut = amount;
             } else if (token0 == weth) {
-                finaOut = _toFINA(weth, amount);
+                finaOut = _toFNA(weth, amount);
             } else {
                 address bridge = bridgeFor(token0);
                 amount = _swap(token0, bridge, amount, address(this));
                 finaOut = _convertStep(bridge, bridge, amount, 0);
             }
         } else if (token0 == fina) {
-            // eg. FINA - ETH
+            // eg. FNA - ETH
             IERC20(fina).safeTransfer(lounge, amount0);
-            finaOut = _toFINA(token1, amount1).add(amount0);
+            finaOut = _toFNA(token1, amount1).add(amount0);
         } else if (token1 == fina) {
-            // eg. USDT - FINA
+            // eg. USDT - FNA
             IERC20(fina).safeTransfer(lounge, amount1);
-            finaOut = _toFINA(token0, amount0).add(amount1);
+            finaOut = _toFNA(token0, amount0).add(amount1);
         } else if (token0 == weth) {
             // eg. ETH - USDC
-            finaOut = _toFINA(
+            finaOut = _toFNA(
                 weth,
                 _swap(token1, weth, amount1, address(this)).add(amount0)
             );
         } else if (token1 == weth) {
             // eg. USDT - ETH
-            finaOut = _toFINA(
+            finaOut = _toFNA(
                 weth,
                 _swap(token0, weth, amount0, address(this)).add(amount1)
             );
@@ -254,7 +254,7 @@ contract FinaChief is Ownable {
 
     // F1 - F10: OK
     // C1 - C24: OK
-    function _toFINA(address token, uint256 amountIn)
+    function _toFNA(address token, uint256 amountIn)
         internal
         returns (uint256 amountOut)
     {

@@ -16,8 +16,8 @@ interface IMigratorChef {
     function migrate(IERC20 token) external returns (IERC20);
 }
 
-/// @notice The (older) FinaMaster contract gives out a constant number of FINA tokens per block.
-/// It is the only address with minting rights for FINA.
+/// @notice The (older) FinaMaster contract gives out a constant number of FNA tokens per block.
+/// It is the only address with minting rights for FNA.
 /// The idea for this FinaMaster V2 (MCV2) contract is therefore to be the owner of a dummy token
 /// that is deposited into the FinaMaster V1 (MCV1) contract.
 /// The allocation point for this pool on MCV1 is the total allocation point for all pools that receive double incentives.
@@ -29,7 +29,7 @@ contract FinaJuniorMasterV2 is BoringOwnable, BoringBatchable {
 
     /// @notice Info of each MCV2 user.
     /// `amount` LP token amount the user has provided.
-    /// `rewardDebt` The amount of FINA entitled to the user.
+    /// `rewardDebt` The amount of FNA entitled to the user.
     struct UserInfo {
         uint256 amount;
         int256 rewardDebt;
@@ -37,15 +37,15 @@ contract FinaJuniorMasterV2 is BoringOwnable, BoringBatchable {
 
     /// @notice Info of each MCV2 pool.
     /// `allocPoint` The amount of allocation points assigned to the pool.
-    /// Also known as the amount of FINA to distribute per block.
+    /// Also known as the amount of FNA to distribute per block.
     struct PoolInfo {
         uint128 accFinaPerShare;
         uint64 lastRewardTime;
         uint64 allocPoint;
     }
 
-    /// @notice Address of FINA contract.
-    IERC20 public immutable FINA;
+    /// @notice Address of FNA contract.
+    IERC20 public immutable FNA;
     // @notice The migrator contract. It has a lot of power. Can only be set through governance (owner).
     IMigratorChef public migrator;
 
@@ -62,7 +62,7 @@ contract FinaJuniorMasterV2 is BoringOwnable, BoringBatchable {
     uint256 public totalAllocPoint;
 
     uint256 public finaPerSecond;
-    uint256 private constant ACC_FINA_PRECISION = 1e12;
+    uint256 private constant ACC_FNA_PRECISION = 1e12;
 
     event Deposit(address indexed user, uint256 indexed pid, uint256 amount, address indexed to);
     event Withdraw(address indexed user, uint256 indexed pid, uint256 amount, address indexed to);
@@ -73,9 +73,9 @@ contract FinaJuniorMasterV2 is BoringOwnable, BoringBatchable {
     event LogUpdatePool(uint256 indexed pid, uint64 lastRewardTime, uint256 lpSupply, uint256 accFinaPerShare);
     event LogFinaPerSecond(uint256 finaPerSecond);
 
-    /// @param _fina The FINA token contract address.
+    /// @param _fina The FNA token contract address.
     constructor(IERC20 _fina) public {
-        FINA = _fina;
+        FNA = _fina;
     }
 
     /// @notice Returns the number of MCV2 pools.
@@ -101,7 +101,7 @@ contract FinaJuniorMasterV2 is BoringOwnable, BoringBatchable {
         emit LogPoolAddition(lpToken.length.sub(1), allocPoint, _lpToken, _rewarder);
     }
 
-    /// @notice Update the given pool's FINA allocation point and `IRewarder` contract. Can only be called by the owner.
+    /// @notice Update the given pool's FNA allocation point and `IRewarder` contract. Can only be called by the owner.
     /// @param _pid The index of the pool. See `poolInfo`.
     /// @param _allocPoint New AP of the pool.
     /// @param _rewarder Address of the rewarder delegate.
@@ -138,10 +138,10 @@ contract FinaJuniorMasterV2 is BoringOwnable, BoringBatchable {
         lpToken[_pid] = newLpToken;
     }
 
-    /// @notice View function to see pending FINA on frontend.
+    /// @notice View function to see pending FNA on frontend.
     /// @param _pid The index of the pool. See `poolInfo`.
     /// @param _user Address of user.
-    /// @return pending FINA reward for a given user.
+    /// @return pending FNA reward for a given user.
     function pendingFina(uint256 _pid, address _user) external view returns (uint256 pending) {
         PoolInfo memory pool = poolInfo[_pid];
         UserInfo storage user = userInfo[_pid][_user];
@@ -150,9 +150,9 @@ contract FinaJuniorMasterV2 is BoringOwnable, BoringBatchable {
         if (block.timestamp > pool.lastRewardTime && lpSupply != 0) {
             uint256 time = block.timestamp.sub(pool.lastRewardTime);
             uint256 finaReward = time.mul(finaPerSecond).mul(pool.allocPoint) / totalAllocPoint;
-            accFinaPerShare = accFinaPerShare.add(finaReward.mul(ACC_FINA_PRECISION) / lpSupply);
+            accFinaPerShare = accFinaPerShare.add(finaReward.mul(ACC_FNA_PRECISION) / lpSupply);
         }
-        pending = int256(user.amount.mul(accFinaPerShare) / ACC_FINA_PRECISION).sub(user.rewardDebt).toUInt256();
+        pending = int256(user.amount.mul(accFinaPerShare) / ACC_FNA_PRECISION).sub(user.rewardDebt).toUInt256();
     }
 
     /// @notice Update reward variables for all pools. Be careful of gas spending!
@@ -174,7 +174,7 @@ contract FinaJuniorMasterV2 is BoringOwnable, BoringBatchable {
             if (lpSupply > 0) {
                 uint256 time = block.timestamp.sub(pool.lastRewardTime);
                 uint256 finaReward = time.mul(finaPerSecond).mul(pool.allocPoint) / totalAllocPoint;
-                pool.accFinaPerShare = pool.accFinaPerShare.add((finaReward.mul(ACC_FINA_PRECISION) / lpSupply).to128());
+                pool.accFinaPerShare = pool.accFinaPerShare.add((finaReward.mul(ACC_FNA_PRECISION) / lpSupply).to128());
             }
             pool.lastRewardTime = block.timestamp.to64();
             poolInfo[pid] = pool;
@@ -182,7 +182,7 @@ contract FinaJuniorMasterV2 is BoringOwnable, BoringBatchable {
         }
     }
 
-    /// @notice Deposit LP tokens to MCV2 for FINA allocation.
+    /// @notice Deposit LP tokens to MCV2 for FNA allocation.
     /// @param pid The index of the pool. See `poolInfo`.
     /// @param amount LP token amount to deposit.
     /// @param to The receiver of `amount` deposit benefit.
@@ -192,7 +192,7 @@ contract FinaJuniorMasterV2 is BoringOwnable, BoringBatchable {
 
         // Effects
         user.amount = user.amount.add(amount);
-        user.rewardDebt = user.rewardDebt.add(int256(amount.mul(pool.accFinaPerShare) / ACC_FINA_PRECISION));
+        user.rewardDebt = user.rewardDebt.add(int256(amount.mul(pool.accFinaPerShare) / ACC_FNA_PRECISION));
 
         // Interactions
         IRewarder _rewarder = rewarder[pid];
@@ -214,7 +214,7 @@ contract FinaJuniorMasterV2 is BoringOwnable, BoringBatchable {
         UserInfo storage user = userInfo[pid][msg.sender];
 
         // Effects
-        user.rewardDebt = user.rewardDebt.sub(int256(amount.mul(pool.accFinaPerShare) / ACC_FINA_PRECISION));
+        user.rewardDebt = user.rewardDebt.sub(int256(amount.mul(pool.accFinaPerShare) / ACC_FNA_PRECISION));
         user.amount = user.amount.sub(amount);
 
         // Interactions
@@ -230,11 +230,11 @@ contract FinaJuniorMasterV2 is BoringOwnable, BoringBatchable {
 
     /// @notice Harvest proceeds for transaction sender to `to`.
     /// @param pid The index of the pool. See `poolInfo`.
-    /// @param to Receiver of FINA rewards.
+    /// @param to Receiver of FNA rewards.
     function harvest(uint256 pid, address to) public {
         PoolInfo memory pool = updatePool(pid);
         UserInfo storage user = userInfo[pid][msg.sender];
-        int256 accumulatedFina = int256(user.amount.mul(pool.accFinaPerShare) / ACC_FINA_PRECISION);
+        int256 accumulatedFina = int256(user.amount.mul(pool.accFinaPerShare) / ACC_FNA_PRECISION);
         uint256 _pendingFina = accumulatedFina.sub(user.rewardDebt).toUInt256();
 
         // Effects
@@ -242,7 +242,7 @@ contract FinaJuniorMasterV2 is BoringOwnable, BoringBatchable {
 
         // Interactions
         if (_pendingFina != 0) {
-            FINA.safeTransfer(to, _pendingFina);
+            FNA.safeTransfer(to, _pendingFina);
         }
         
         IRewarder _rewarder = rewarder[pid];
@@ -256,19 +256,19 @@ contract FinaJuniorMasterV2 is BoringOwnable, BoringBatchable {
     /// @notice Withdraw LP tokens from MCV2 and harvest proceeds for transaction sender to `to`.
     /// @param pid The index of the pool. See `poolInfo`.
     /// @param amount LP token amount to withdraw.
-    /// @param to Receiver of the LP tokens and FINA rewards.
+    /// @param to Receiver of the LP tokens and FNA rewards.
     function withdrawAndHarvest(uint256 pid, uint256 amount, address to) public {
         PoolInfo memory pool = updatePool(pid);
         UserInfo storage user = userInfo[pid][msg.sender];
-        int256 accumulatedFina = int256(user.amount.mul(pool.accFinaPerShare) / ACC_FINA_PRECISION);
+        int256 accumulatedFina = int256(user.amount.mul(pool.accFinaPerShare) / ACC_FNA_PRECISION);
         uint256 _pendingFina = accumulatedFina.sub(user.rewardDebt).toUInt256();
 
         // Effects
-        user.rewardDebt = accumulatedFina.sub(int256(amount.mul(pool.accFinaPerShare) / ACC_FINA_PRECISION));
+        user.rewardDebt = accumulatedFina.sub(int256(amount.mul(pool.accFinaPerShare) / ACC_FNA_PRECISION));
         user.amount = user.amount.sub(amount);
         
         // Interactions
-        FINA.safeTransfer(to, _pendingFina);
+        FNA.safeTransfer(to, _pendingFina);
 
         IRewarder _rewarder = rewarder[pid];
         if (address(_rewarder) != address(0)) {

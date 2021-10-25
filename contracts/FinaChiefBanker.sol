@@ -53,7 +53,7 @@ contract FinaChiefBanker is Ownable {
         address indexed token0,
         uint256 amount0,
         uint256 amountVAULT,
-        uint256 amountFINA
+        uint256 amountFNA
     );
 
     constructor(

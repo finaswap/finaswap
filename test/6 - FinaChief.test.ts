@@ -8,7 +8,7 @@ describe("FinaChief", function () {
 
   beforeEach(async function () {
     await deploy(this, [
-      ["fina", this.ERC20Mock, ["FINA", "FINA", getBigNumber("10000000")]],
+      ["fina", this.ERC20Mock, ["FNA", "FNA", getBigNumber("10000000")]],
       ["dai", this.ERC20Mock, ["DAI", "DAI", getBigNumber("10000000")]],
       ["mic", this.ERC20Mock, ["MIC", "MIC", getBigNumber("10000000")]],
       ["usdc", this.ERC20Mock, ["USDC", "USDC", getBigNumber("10000000")]],
@@ -48,7 +48,7 @@ describe("FinaChief", function () {
     })
   })
   describe("convert", function () {
-    it("should convert FINA - ETH", async function () {
+    it("should convert FNA - ETH", async function () {
       await this.finaEth.transfer(this.finaChief.address, getBigNumber(1))
       await this.finaChief.convert(this.fina.address, this.weth.address)
       expect(await this.fina.balanceOf(this.finaChief.address)).to.equal(0)
@@ -72,7 +72,7 @@ describe("FinaChief", function () {
       expect(await this.fina.balanceOf(this.lounge.address)).to.equal("1590898251382934275")
     })
 
-    it("should convert USDC - FINA", async function () {
+    it("should convert USDC - FNA", async function () {
       await this.finaUSDC.transfer(this.finaChief.address, getBigNumber(1))
       await this.finaChief.convert(this.usdc.address, this.fina.address)
       expect(await this.fina.balanceOf(this.finaChief.address)).to.equal(0)

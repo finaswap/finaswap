@@ -11,7 +11,7 @@ describe("FinaChiefBanker", function () {
   beforeEach(async function () {
     // Deploy ERC20 Mocks and Factory
     await deploy(this, [
-      ["fina", this.ERC20Mock, ["FINA", "FINA", getBigNumber("10000000")]],
+      ["fina", this.ERC20Mock, ["FNA", "FNA", getBigNumber("10000000")]],
       ["dai", this.ERC20Mock, ["DAI", "DAI", getBigNumber("10000000")]],
       ["mic", this.ERC20Mock, ["MIC", "MIC", getBigNumber("10000000")]],
       ["usdc", this.ERC20Mock, ["USDC", "USDC", getBigNumber("10000000")]],

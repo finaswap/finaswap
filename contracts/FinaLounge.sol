@@ -9,7 +9,7 @@ import "@openzeppelin/contracts/math/SafeMath.sol";
 // FinaLounge is the coolest lounge in the office. You come in with some Fina, and leave with more! The longer you stay, the more Fina you get.
 //
 // This contract handles swapping to and from xFina, FinaSwap's staking token.
-contract FinaLounge is ERC20("FinaLounge", "xFINA"){
+contract FinaLounge is ERC20("FinaLounge", "xFNA"){
     using SafeMath for uint256;
     IERC20 public fina;
 
@@ -18,7 +18,7 @@ contract FinaLounge is ERC20("FinaLounge", "xFINA"){
         fina = _fina;
     }
 
-    // Enter the lounge. Pay some FINAs. Earn some shares.
+    // Enter the lounge. Pay some FNAs. Earn some shares.
     // Locks Fina and mints xFina
     function enter(uint256 _amount) public {
         // Gets the amount of Fina locked in the contract
@@ -38,7 +38,7 @@ contract FinaLounge is ERC20("FinaLounge", "xFINA"){
         fina.transferFrom(msg.sender, address(this), _amount);
     }
 
-    // Leave the lounge. Claim back your FINAs.
+    // Leave the lounge. Claim back your FNAs.
     // Unlocks the staked + gained Fina and burns xFina
     function leave(uint256 _share) public {
         // Gets the amount of xFina in existence

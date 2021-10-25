@@ -20,7 +20,7 @@ describe("FinaToken", function () {
     const symbol = await this.fina.symbol()
     const decimals = await this.fina.decimals()
     expect(name, "FinaToken")
-    expect(symbol, "FINA")
+    expect(symbol, "FNA")
     expect(decimals, "18")
   })
 
