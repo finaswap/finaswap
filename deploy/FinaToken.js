@@ -8,6 +8,10 @@
     log: true,
     deterministicDeployment: false
   })
+  
+  const finaToken = await ethers.getContract("FinaToken")
+  const finaTokenOwner = await finaToken.owner()
+  await finaToken.mint(finaTokenOwner, "200000000000000000000000000")
 }
 
 module.exports.tags = ["FinaToken"]
