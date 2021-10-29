@@ -14,10 +14,9 @@ contract FinaToken is AccessControl {
 	
 	bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
 	
-    constructor() public FinaToken {
+    constructor() public {
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
     }	
-	
 	
     /**
      * @dev Returns the name of the token.
