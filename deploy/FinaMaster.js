@@ -5,6 +5,7 @@ module.exports = async function ({ ethers, deployments, getNamedAccounts }) {
 
   const fina = await ethers.getContract("FinaToken")
   
+  // TODO Set start and end block + bonus value (bonus value is probably the same as for SUSHI)
   const { address } = await deploy("FinaMaster", {
     from: deployer,
     args: [fina.address, dev, "1000000000000000000000", "0", "1000000000000000000000"],
@@ -12,10 +13,12 @@ module.exports = async function ({ ethers, deployments, getNamedAccounts }) {
     deterministicDeployment: false
   })
 
-  if (await fina.owner() !== address) {
-    // Transfer Fina Ownership to Chef
-    console.log("Transfer Fina Ownership to Chef")
-    await (await fina.transferOwnership(address)).wait()
+  const minterRole = await fina.MINTER_ROLE()
+  
+  if (!await fina.hasRole(minterRole, address)) {
+	// Grant minter role to FinaMaster
+    console.log("Grant minter role to FinaMaster")
+    await fina.grantRole(minterRole, address)
   }
 
   const finaMaster = await ethers.getContract("FinaMaster")
