@@ -3,14 +3,22 @@
 pragma solidity 0.6.12;
 pragma experimental ABIEncoderV2;
 
-import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/access/AccessControl.sol";
 
-contract FinaToken is Ownable {
+contract FinaToken is AccessControl {
     uint256 private _totalSupply;
 	
     string private _name = "FinaToken";
     string private _symbol = "FNA";
     uint8 private _decimals = 18;
+	
+	bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
+	
+    constructor() public FinaToken {
+        _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
+    }	
+	
+	
     /**
      * @dev Returns the name of the token.
      */
@@ -47,10 +55,10 @@ contract FinaToken is Ownable {
         return _totalSupply;
     }
 
-    /// @notice Allowance amounts on behalf of others
+    // @notice Allowance amounts on behalf of others
     mapping (address => mapping (address => uint96)) internal allowances;
 
-    /// @notice Official record of token balances for each account
+    // @notice Official record of token balances for each account
     mapping (address => uint96) internal balances;
 
     /// @notice A record of each accounts delegate
@@ -166,8 +174,9 @@ contract FinaToken is Ownable {
         return true;
     }
 	
-    /// @notice Creates `_amount` token to `_to`. Must only be called by the owner (FinaMaster).
-    function mint(address to, uint rawAmount) public onlyOwner {
+    /// @notice Creates `_amount` token to `_to`.
+    function mint(address to, uint rawAmount) public {
+	    require(hasRole(MINTER_ROLE, msg.sender), "FinaToken::mint: caller is not a minter");
 	    uint96 amount = safe96(rawAmount, "FinaToken::mint: amount exceeds 96 bits");
         _mint(to, amount);
         _moveDelegates(address(0), delegates[to], amount);
