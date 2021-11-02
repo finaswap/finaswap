@@ -15,6 +15,10 @@ describe("FinaLounge", function () {
   beforeEach(async function () {
     this.fina = await this.FinaToken.deploy()
     this.lounge = await this.FinaLounge.deploy(this.fina.address)
+	
+	const minterRole = await this.fina.MINTER_ROLE()
+	await this.fina.grantRole(minterRole, this.fina.signer.address)
+		
     this.fina.mint(this.alice.address, "100")
     this.fina.mint(this.bob.address, "100")
     this.fina.mint(this.carol.address, "100")

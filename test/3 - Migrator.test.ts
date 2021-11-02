@@ -46,8 +46,9 @@ describe("Migrator", function () {
 
     this.migrator = await this.Migrator.deploy(this.chef.address, this.factory1.address, this.factory2.address, "0")
     await this.migrator.deployed()
-
-    await this.fina.transferOwnership(this.chef.address)
+	
+    const minterRole = await this.fina.MINTER_ROLE()
+	await this.fina.grantRole(minterRole, this.chef.address)	
 
     await this.chef.add("100", this.lp1.address, true)
   })

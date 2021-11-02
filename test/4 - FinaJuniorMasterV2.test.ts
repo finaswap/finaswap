@@ -9,7 +9,7 @@ describe("FinaJuniorMasterV2", function () {
     await deploy(this, [
       ["brokenRewarder", this.RewarderBrokenMock]
     ])
-  })
+  })  
 
   beforeEach(async function () {
     await deploy(this, [
@@ -24,6 +24,9 @@ describe("FinaJuniorMasterV2", function () {
       ["r", this.ERC20Mock, ["Reward", "RewardT", getBigNumber(100000)]],
     ])
     await deploy(this, [["rewarder", this.RewarderMock, [getBigNumber(1), this.r.address, this.chef.address]]])
+		
+	const minterRole = await this.fina.MINTER_ROLE()	
+    await this.fina.grantRole(minterRole, this.chef.signer.address)
 
     await this.fina.mint(this.chef.address, getBigNumber(10000))
     await this.lp.approve(this.chef.address, getBigNumber(10))
@@ -32,7 +35,7 @@ describe("FinaJuniorMasterV2", function () {
   })
 
   describe("PoolLength", function () {
-    it("PoolLength should execute", async function () {
+    it("PoolLength should execute", async function () {	  
       await this.chef.add(10, this.rlp.address, this.rewarder.address)
       expect((await this.chef.poolLength())).to.be.equal(1);
     })

@@ -19,8 +19,10 @@ describe("FinaMasterV2", function () {
       ["dummy", this.ERC20Mock, ["Dummy", "DummyT", getBigNumber(10)]],
       ['chef', this.FinaMaster, [this.fina.address, this.bob.address, getBigNumber(100), "0", "0"]]
     ])
-
-    await this.fina.transferOwnership(this.chef.address)
+	
+    const minterRole = await this.fina.MINTER_ROLE()
+	await this.fina.grantRole(minterRole, this.chef.address)
+	
     await this.chef.add(100, this.lp.address, true)
     await this.chef.add(100, this.dummy.address, true)
     await this.lp.approve(this.chef.address, getBigNumber(10))

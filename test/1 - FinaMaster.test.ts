@@ -26,15 +26,16 @@ describe("FinaMaster", function () {
     this.finaMaster = await this.FinaMaster.deploy(this.fina.address, this.dev.address, "1000", "0", "1000")
     await this.finaMaster.deployed()
 
-    await this.fina.transferOwnership(this.finaMaster.address)
+	const minterRole = await this.fina.MINTER_ROLE()
+	await this.fina.grantRole(minterRole, this.finaMaster.address)
 
     const fina = await this.finaMaster.fina()
     const devaddr = await this.finaMaster.devaddr()
-    const owner = await this.fina.owner()
+    const isminter = await this.fina.hasRole(minterRole, this.finaMaster.address)
 
     expect(fina).to.equal(this.fina.address)
     expect(devaddr).to.equal(this.dev.address)
-    expect(owner).to.equal(this.finaMaster.address)
+    expect(isminter).to.equal(true)
   })
 
   it("should allow dev and only dev to update dev", async function () {
@@ -96,7 +97,8 @@ describe("FinaMaster", function () {
       this.finaMaster = await this.FinaMaster.deploy(this.fina.address, this.dev.address, "100", "100", "1000")
       await this.finaMaster.deployed()
 
-      await this.fina.transferOwnership(this.finaMaster.address)
+	  const minterRole = await this.fina.MINTER_ROLE()
+	  await this.fina.grantRole(minterRole, this.finaMaster.address)
 
       await this.finaMaster.add("100", this.lp.address, true)
 
@@ -131,7 +133,10 @@ describe("FinaMaster", function () {
       // 100 per block farming rate starting at block 200 with bonus until block 1000
       this.finaMaster = await this.FinaMaster.deploy(this.fina.address, this.dev.address, "100", "200", "1000")
       await this.finaMaster.deployed()
-      await this.fina.transferOwnership(this.finaMaster.address)
+	  
+	  const minterRole = await this.fina.MINTER_ROLE()
+	  await this.fina.grantRole(minterRole, this.finaMaster.address)
+	  
       await this.finaMaster.add("100", this.lp.address, true)
       await this.lp.connect(this.bob).approve(this.finaMaster.address, "1000")
       await advanceBlockTo("199")
@@ -156,8 +161,11 @@ describe("FinaMaster", function () {
       // 100 per block farming rate starting at block 300 with bonus until block 1000
       this.finaMaster = await this.FinaMaster.deploy(this.fina.address, this.dev.address, "100", "300", "1000")
       await this.finaMaster.deployed()
-      await this.fina.transferOwnership(this.finaMaster.address)
-      await this.finaMaster.add("100", this.lp.address, true)
+	  
+	  const minterRole = await this.fina.MINTER_ROLE()
+	  await this.fina.grantRole(minterRole, this.finaMaster.address)
+      
+	  await this.finaMaster.add("100", this.lp.address, true)
       await this.lp.connect(this.alice).approve(this.finaMaster.address, "1000", {
         from: this.alice.address,
       })
@@ -223,8 +231,11 @@ describe("FinaMaster", function () {
     it("should give proper FNAs allocation to each pool", async function () {
       // 100 per block farming rate starting at block 400 with bonus until block 1000
       this.finaMaster = await this.FinaMaster.deploy(this.fina.address, this.dev.address, "100", "400", "1000")
-      await this.fina.transferOwnership(this.finaMaster.address)
-      await this.lp.connect(this.alice).approve(this.finaMaster.address, "1000", { from: this.alice.address })
+      
+	  const minterRole = await this.fina.MINTER_ROLE()
+	  await this.fina.grantRole(minterRole, this.finaMaster.address)
+      
+	  await this.lp.connect(this.alice).approve(this.finaMaster.address, "1000", { from: this.alice.address })
       await this.lp2.connect(this.bob).approve(this.finaMaster.address, "1000", { from: this.bob.address })
       // Add first LP to the pool with allocation 1
       await this.finaMaster.add("10", this.lp.address, true)
@@ -250,8 +261,11 @@ describe("FinaMaster", function () {
     it("should stop giving bonus FNAs after the bonus period ends", async function () {
       // 100 per block farming rate starting at block 500 with bonus until block 600
       this.finaMaster = await this.FinaMaster.deploy(this.fina.address, this.dev.address, "100", "500", "600")
-      await this.fina.transferOwnership(this.finaMaster.address)
-      await this.lp.connect(this.alice).approve(this.finaMaster.address, "1000", { from: this.alice.address })
+      
+	  const minterRole = await this.fina.MINTER_ROLE()
+	  await this.fina.grantRole(minterRole, this.finaMaster.address)
+      
+	  await this.lp.connect(this.alice).approve(this.finaMaster.address, "1000", { from: this.alice.address })
       await this.finaMaster.add("1", this.lp.address, true)
       // Alice deposits 10 LPs at block 590
       await advanceBlockTo("589")

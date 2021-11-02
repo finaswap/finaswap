@@ -13,6 +13,9 @@ describe("FinaToken", function () {
   beforeEach(async function () {
     this.fina = await this.FinaToken.deploy()
     await this.fina.deployed()
+	
+	const minterRole = await this.fina.MINTER_ROLE()
+	await this.fina.grantRole(minterRole, this.fina.signer.address)
   })
 
   it("should have correct name and symbol and decimal", async function () {
@@ -24,11 +27,11 @@ describe("FinaToken", function () {
     expect(decimals, "18")
   })
 
-  it("should only allow owner to mint token", async function () {
+  it("should only allow role members to mint token", async function () {
     await this.fina.mint(this.alice.address, "100")
     await this.fina.mint(this.bob.address, "1000")
     await expect(this.fina.connect(this.bob).mint(this.carol.address, "1000", { from: this.bob.address })).to.be.revertedWith(
-      "Ownable: caller is not the owner"
+      "revert FinaToken::mint: caller is not a minter"
     )
     const totalSupply = await this.fina.totalSupply()
     const aliceBal = await this.fina.balanceOf(this.alice.address)
