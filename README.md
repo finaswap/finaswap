@@ -4,7 +4,7 @@ https://finaswap.com/
 
 ## Deployed Contracts
 
-https://dev.fina.com/finaswap/contracts
+https://dev.finaswap.com/finaswap/contracts
 
 ## Docs
 
