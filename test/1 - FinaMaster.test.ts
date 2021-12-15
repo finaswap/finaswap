@@ -1,3 +1,7 @@
+const {
+  bytecode,
+  abi,
+} = require("../deployments/finatoken/FinaToken.json");
 
 import { ethers } from "hardhat";
 import { expect } from "chai";
@@ -13,12 +17,12 @@ describe("FinaMaster", function () {
     this.minter = this.signers[4]
 
     this.FinaMaster = await ethers.getContractFactory("FinaMaster")
-    this.FinaToken = await ethers.getContractFactory("FinaToken")
+    this.FinaToken = new ethers.ContractFactory(abi, bytecode, this.dev)
     this.ERC20Mock = await ethers.getContractFactory("ERC20Mock", this.minter)
   })
 
   beforeEach(async function () {
-    this.fina = await this.FinaToken.deploy()
+    this.fina = await this.FinaToken.deploy("FinaToken", "FNA")
     await this.fina.deployed()
   })
 

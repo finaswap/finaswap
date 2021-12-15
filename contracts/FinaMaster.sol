@@ -7,7 +7,7 @@ import "@openzeppelin/contracts/token/ERC20/SafeERC20.sol";
 import "@openzeppelin/contracts/utils/EnumerableSet.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "./governance/FinaToken.sol";
+import "./interfaces/IERC20Mintable.sol";
 
 interface IMigratorChef {
     // Perform LP token migration from legacy UniswapV2 to FinaSwap.
@@ -56,7 +56,7 @@ contract FinaMaster is Ownable {
         uint256 accFinaPerShare; // Accumulated FNAs per share, times 1e12. See below.
     }
     // The FNA TOKEN!
-    FinaToken public fina;
+    IERC20Mintable public fina;
     // Dev address.
     address public devaddr;
     // Block number when bonus FNA period ends.
@@ -84,7 +84,7 @@ contract FinaMaster is Ownable {
     );
 
     constructor(
-        FinaToken _fina,
+        IERC20Mintable _fina,
         address _devaddr,
         uint256 _finaPerBlock,
         uint256 _startBlock,

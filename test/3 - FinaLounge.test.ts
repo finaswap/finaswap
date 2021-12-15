@@ -1,33 +1,37 @@
+const {
+  bytecode,
+  abi,
+} = require("../deployments/finatoken/FinaToken.json");
 import { ethers } from "hardhat";
 import { expect } from "chai";
 
 describe("FinaLounge", function () {
   before(async function () {
-    this.FinaToken = await ethers.getContractFactory("FinaToken")
-    this.FinaLounge = await ethers.getContractFactory("FinaLounge")
-
     this.signers = await ethers.getSigners()
     this.alice = this.signers[0]
     this.bob = this.signers[1]
     this.carol = this.signers[2]
+	
+    this.FinaToken = new ethers.ContractFactory(abi, bytecode, this.alice)
+    this.FinaLounge = await ethers.getContractFactory("FinaLounge")	
   })
 
   beforeEach(async function () {
-    this.fina = await this.FinaToken.deploy()
+    this.fina = await this.FinaToken.deploy("FinaToken", "FNA")
     this.lounge = await this.FinaLounge.deploy(this.fina.address)
 	
 	const minterRole = await this.fina.MINTER_ROLE()
 	await this.fina.grantRole(minterRole, this.fina.signer.address)
-		
+			
     this.fina.mint(this.alice.address, "100")
     this.fina.mint(this.bob.address, "100")
     this.fina.mint(this.carol.address, "100")
   })
 
   it("should not allow enter if not enough approve", async function () {
-    await expect(this.lounge.enter("100")).to.be.revertedWith("revert FinaToken::transferFrom: transfer amount exceeds spender allowance")
+    await expect(this.lounge.enter("100")).to.be.revertedWith("revert ERC20: transfer amount exceeds balance")
     await this.fina.approve(this.lounge.address, "50")
-    await expect(this.lounge.enter("100")).to.be.revertedWith("revert FinaToken::transferFrom: transfer amount exceeds spender allowance")
+    await expect(this.lounge.enter("100")).to.be.revertedWith("revert ERC20: transfer amount exceeds allowance")
     await this.fina.approve(this.lounge.address, "100")
     await this.lounge.enter("100")
     expect(await this.lounge.balanceOf(this.alice.address)).to.equal("100")
@@ -36,7 +40,7 @@ describe("FinaLounge", function () {
   it("should not allow withraw more than what you have", async function () {
     await this.fina.approve(this.lounge.address, "100")
     await this.lounge.enter("100")
-    await expect(this.lounge.leave("200")).to.be.revertedWith("ERC20: burn amount exceeds balance")
+    await expect(this.lounge.leave("200")).to.be.revertedWith("revert ERC20: burn amount exceeds balance")
   })
 
   it("should work with more than one participant", async function () {
