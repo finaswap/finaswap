@@ -30,6 +30,7 @@
     "console": "hardhat console",
     "testnet:deploy": "yarn ropsten:deploy && yarn rinkeby:deploy && yarn goerli:deploy && yarn kovan:deploy && yarn moonbase:deploy && yarn arbitrum:deploy",
     "bsc-testnet:deploy": "hardhat --network bsc-testnet deploy",
+	"bsc:deploy": "hardhat --network bsc deploy",
     "mainnet:deploy": "hardhat --network mainnet deploy",
     "mainnet:verify": "hardhat --network mainnet etherscan-verify --solc-input",
     "mainnet:export": "hardhat --network mainnet export --export exports/mainnet.json",
